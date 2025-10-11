@@ -8,6 +8,7 @@ namespace ControleDeGastos.InjecaoDeDependencias
         public static void AdicionarInjecaoDeRepositorios(this IServiceCollection services)
         {
             services.AddScoped<IControleDeGastosRepositorio, ControleDeGastosRepositorio>();
+            services.AddScoped<IOperacoesGenericas, OperacoesGenericas>();
         }
     }
 }

@@ -16,6 +16,8 @@ namespace ControleDeGastos.Models
         public string? Observacao { get; set; }
         [Column("categoria_id")]
         public int CategoriaId { get; set; }
+        [Column("deletado")]
+        public string Deletado { get; set; }
 
         // propriedades de navegacão
         public CategoriasDeLancamentos categoria { get; set; }

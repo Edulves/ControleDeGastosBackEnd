@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using ControleDeGastos.DTOs.Erros;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using static ControleDeGastos.Data.PadraoDeResposta.Base.RespostaPadrao;
+using ControleDeGastos.Data.PadraoDeResposta.Base;
 
 namespace ControleDeGastos.Data.PadraoDeResposta.Extensao
 {
@@ -9,28 +10,17 @@ namespace ControleDeGastos.Data.PadraoDeResposta.Extensao
         /// <summary>
         /// Converte um Result<T> em IActionResult padronizado com ProblemDetails + campo "errors".
         /// </summary>
-        public static IActionResult ToIActionResult<T>(this Result<T> result, ControllerBase controller)
+        public static IActionResult ToIActionResult<T>(this RespostaPadrao<T> result, ControllerBase controller)
         {
             if (!result.IsSuccess)
             {
-                var problem = new ProblemDetails
+                var problem = new DetalhesDeProblemas
                 {
                     Status = result.StatusCode,
-                    Title = result.Title,
-                    Detail = string.Join("; ", result.ErrorMessages),
-                    Instance = controller.HttpContext.Request.Path
+                    Titulo = result.Title,
+                    Detalhe = string.Join("; ", result.ErrorMessages),
+                    Instancia = controller.HttpContext.Request.Path
                 };
-
-                // traceId
-                problem.Extensions["traceId"] =
-                    Activity.Current?.Id ?? controller.HttpContext.TraceIdentifier;
-
-
-                var errors = new Dictionary<string, string[]>
-                {
-                    ["mensagemErro"] = result.ErrorMessages.ToArray()
-                };
-                problem.Extensions["errors"] = errors;
 
                 return controller.StatusCode(problem.Status.Value, problem);
             }
@@ -42,12 +32,12 @@ namespace ControleDeGastos.Data.PadraoDeResposta.Extensao
         /// Converte um Result&lt;(byte[] fileContents, string fileName)&gt; em IActionResult File(...)
         /// ou, em caso de falha, em ProblemDetails padronizado.
         /// </summary>
-        public static IActionResult ToFileExcelResult(this Result<(byte[] fileContents, string fileName)> result, ControllerBase controller,
+        public static IActionResult ToFileExcelResult(this RespostaPadrao<(byte[] fileContents, string fileName)> result, ControllerBase controller,
             string contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
         {
             if (!result.IsSuccess)
             {
-                var converted = Result<object>.Failure(
+                var converted = RespostaPadrao<object>.Failure(
                     errorMessage: result.ErrorMessages.First(),
                     statusCode: result.StatusCode ?? StatusCodes.Status400BadRequest,
                     title: result.Title,

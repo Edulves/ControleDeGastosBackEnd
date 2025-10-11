@@ -1,12 +1,12 @@
-using ClosedXML.Excel;
 using ControleDeGastos.Data.Contexto;
 using ControleDeGastos.Data.PadraoDeResposta.Extensao;
+using ControleDeGastos.Data.ResultadoPaginado;
+using ControleDeGastos.DTOs.Erros;
 using ControleDeGastos.DTOs.Requisicao;
+using ControleDeGastos.DTOs.Resposta;
 using ControleDeGastos.Models;
 using ControleDeGastos.Servico.InterfaceServicos;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Threading.Tasks;
 
 namespace ControleDeGastos.Controllers
 {
@@ -14,60 +14,150 @@ namespace ControleDeGastos.Controllers
     [Route("[controller]")]
     public class ControleDeGastosController(AppDbContext context, IControleDeGastosServico controleDeGastosServico) : ControllerBase
     {
-        [HttpGet("ObterGastos")]
-        public async Task<IActionResult> ObterGastos([FromQuery] ObterGastosDiarios obterGastosDiarios)
-        {
-            return (await controleDeGastosServico.ObterGastosDiarios(obterGastosDiarios)).ToIActionResult(this);
-        }
-
-        [HttpGet("ObterCategorias")]
-        public async Task<IActionResult> ObterCategorias()
-        {
-            return (await controleDeGastosServico.ObterCategoriasDeLancamentos()).ToIActionResult(this);
-        }
-
-        [HttpPost("SubirExcel")]
-        public async Task<IActionResult> SubirExcel([FromForm] IFormFile planilha)
+        #region GastosDiarios
+        [HttpGet("ObterGastosDiarios")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResultadoPaginado<ObterGastosResposta>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> ObterGastos([FromQuery] ObterGastosDiariosRequisicao requisicao)
         {
             try
             {
-                var dadosParaImportar = new List<GastosDiarios>();
-
-                using (var stream = planilha.OpenReadStream())
-                using (var workbook = new XLWorkbook(stream))
-                {
-                    var worksheet = workbook.Worksheet(1);
-                    var rows = worksheet.RowsUsed().Skip(1);
-
-                    foreach (var row in rows)
-                    {
-                        if (row.Cell(1).GetValue<string>() == "Total")
-                            continue;
-
-                        var dataDeLancamento = row.Cell(1).GetValue<DateTime>();
-                        var valorGasto = row.Cell(2).GetValue<decimal>();
-                        var observacao = row.Cell(3).GetValue<string>();
-                        var idCategoria = row.Cell(5).GetValue<int>();
-
-                        var novosLancamenos = new GastosDiarios(); 
-                        novosLancamenos.DataDoLancamento = dataDeLancamento;
-                        novosLancamenos.Valorgasto = valorGasto;
-                        novosLancamenos.Observacao = observacao;
-                        novosLancamenos.CategoriaId = idCategoria;
-
-                        dadosParaImportar.Add(novosLancamenos);
-                    }
-                }
-
-                await context.AddRangeAsync(dadosParaImportar);
-                await context.SaveChangesAsync();
-
-                return Ok(dadosParaImportar);
+                return (await controleDeGastosServico.ObterGastosDiarios(requisicao)).ToIActionResult(this);
             }
             catch (Exception ex)
             {
-                return StatusCode(500, $"Erro ao processar o arquivo: {ex.Message}");
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
             }
         }
+
+        [HttpPost("CriarLancamentosDeGastosDiario")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GastosDiarios>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> CriarLancamentosDeGastosDiarios([FromBody] List<CriarLancamentoDeGastoDiarioRequisicao> requisicao)
+        {
+            try
+            {
+                return (await controleDeGastosServico.CriarLancamentosDeGastosDiarios(requisicao)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
+
+        [HttpPut("AtualizarLancamentosDeGastosDiarios")]
+        public async Task<IActionResult> AtualizarLancamentosDeGastosDiarios([FromQuery] AtualizarGastosDiariosRequisicao atualizarDiariosRequisicao)
+        {
+            try
+            {
+                //return (await controleDeGastosServico.AtualizarLancamentosDeGastosDiarios(atualizarDiariosRequisicao)).ToIActionResult(this);
+
+                throw new NotImplementedException();
+            }
+            catch (Exception ex) 
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+
+        }
+        #endregion
+
+        #region Categorias
+
+        [HttpGet("ObterCategorias")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoriasDeLancamentos>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> ObterCategorias()
+        {
+            try
+            {
+                return (await controleDeGastosServico.ObterCategoriasDeLancamentos()).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
+        #endregion
+
+
+        //[HttpPost("SubirExcel")]
+        //public async Task<IActionResult> SubirExcel([FromForm] IFormFile planilha)
+        //{
+        //    try
+        //    {
+        //        var dadosParaImportar = new List<GastosDiarios>();
+
+        //        using (var stream = planilha.OpenReadStream())
+        //        using (var workbook = new XLWorkbook(stream))
+        //        {
+        //            var worksheet = workbook.Worksheet(2);
+        //            var rows = worksheet.RowsUsed().Skip(1);
+
+        //            foreach (var row in rows)
+        //            {
+        //                if (row.Cell(1).GetValue<string>() == "Total")
+        //                    continue;
+
+        //                var dataDeLancamento = row.Cell(1).GetValue<DateTime>();
+        //                var valorGasto = row.Cell(2).GetValue<decimal>();
+        //                var observacao = row.Cell(3).GetValue<string>();
+        //                var idCategoria = row.Cell(5).GetValue<int>();
+
+        //                var novosLancamenos = new GastosDiarios(); 
+        //                novosLancamenos.DataDoLancamento = dataDeLancamento;
+        //                novosLancamenos.Valorgasto = valorGasto;
+        //                novosLancamenos.Observacao = observacao;
+        //                novosLancamenos.CategoriaId = idCategoria;
+
+        //                dadosParaImportar.Add(novosLancamenos);
+        //            }
+        //        }
+
+        //        await context.AddRangeAsync(dadosParaImportar);
+        //        await context.SaveChangesAsync();
+
+        //        return Ok(dadosParaImportar);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(500, $"Erro ao processar o arquivo: {ex.Message}");
+        //    }
+        //}
     }
 }

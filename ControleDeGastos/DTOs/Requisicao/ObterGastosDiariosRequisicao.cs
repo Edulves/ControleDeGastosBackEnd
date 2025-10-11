@@ -2,7 +2,7 @@
 
 namespace ControleDeGastos.DTOs.Requisicao
 {
-    public class ObterGastosDiarios : RequisicaoPaginada
+    public class ObterGastosDiariosRequisicao : RequisicaoPaginada
     {
     }
 }

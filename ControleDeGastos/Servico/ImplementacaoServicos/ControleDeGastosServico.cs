@@ -5,19 +5,38 @@ using ControleDeGastos.DTOs.Resposta;
 using ControleDeGastos.Models;
 using ControleDeGastos.Repositorios.InterfaceRepositorios;
 using ControleDeGastos.Servico.InterfaceServicos;
-using DocumentFormat.OpenXml.Office2016.Excel;
-using static ControleDeGastos.Data.PadraoDeResposta.Base.RespostaPadrao;
+using ControleDeGastos.Data.PadraoDeResposta.Base;
 
 namespace ControleDeGastos.Servico.ImplementacaoServicos
 {
-    public class ControleDeGastosServico(IControleDeGastosRepositorio controleDeGastosRepositorio) : IControleDeGastosServico
+    public class ControleDeGastosServico(IControleDeGastosRepositorio controleDeGastosRepositorio, IOperacoesGenericas operacoesGenericas) : IControleDeGastosServico
     {
-        public async Task<Result<ResultadoPaginado<ObterGastosResposta>>> ObterGastosDiarios(ObterGastosDiarios obterGastosDiarios)
+        #region GastosDiarios
+        public async Task<RespostaPadrao<List<GastosDiarios>>> CriarLancamentosDeGastosDiarios(List<CriarLancamentoDeGastoDiarioRequisicao> requisicao)
         {
+            var modeloBanco = requisicao.Select(x => new GastosDiarios
+            {
+                DataDoLancamento = x.DataDoLancamento,
+                Valorgasto = x.Valorgasto,
+                Observacao = x.Observacao,
+                CategoriaId = x.CategoriaId,
+                Deletado = "",
+            }).ToList();
+
+            var resultado = await operacoesGenericas.CriarAsync(modeloBanco);
+
+            return RespostaPadrao<List<GastosDiarios>>.Success(resultado);
+        }
+
+        public async Task<RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>> ObterGastosDiarios(ObterGastosDiariosRequisicao obterGastosDiarios)
+        {
+            if (obterGastosDiarios.Pagina < 1)
+                return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Failure("Pagina indicada não existe");
+
             var consulta = await controleDeGastosRepositorio.ObterGastosDiarios(obterGastosDiarios);
 
             if (consulta.itens.Count <= 0)
-                return Result<ResultadoPaginado<ObterGastosResposta>>.Failure("Nenhu registro de gastos encontrado");
+                return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Failure("Nenhu registro de gastos encontrado");
 
             var resposta = consulta.itens.Select(x => new ObterGastosResposta
             {
@@ -30,17 +49,20 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
             var respostaPaginada = (resposta, consulta.totalItens).ToPagedResult(obterGastosDiarios.Pagina, obterGastosDiarios.QtdPorPagina);
 
-            return Result<ResultadoPaginado<ObterGastosResposta>>.Success(respostaPaginada);
+            return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Success(respostaPaginada);
         }
+        #endregion
 
-        public async Task<Result<List<CategoriasDeLancamentos>>> ObterCategoriasDeLancamentos()
+        #region CategoriasDeGastos
+        public async Task<RespostaPadrao<List<CategoriasDeLancamentos>>> ObterCategoriasDeLancamentos()
         {
             var consulta = await controleDeGastosRepositorio.ObterCategoriasDeLancamentos();
 
             if (consulta.Count <= 0)
-                return Result<List<CategoriasDeLancamentos>>.Failure("Nenhu registro de categoria de lançamento encontrado");
+                return RespostaPadrao<List<CategoriasDeLancamentos>>.Failure("Nenhu registro de categoria de lançamento encontrado");
 
-            return Result<List<CategoriasDeLancamentos>>.Success(consulta);
+            return RespostaPadrao<List<CategoriasDeLancamentos>>.Success(consulta);
         }
+        #endregion
     }
 }
