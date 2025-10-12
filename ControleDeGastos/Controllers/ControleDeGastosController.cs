@@ -40,7 +40,7 @@ namespace ControleDeGastos.Controllers
         }
 
         [HttpPost("CriarLancamentosDeGastosDiario")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<GastosDiarios>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
         public async Task<IActionResult> CriarLancamentosDeGastosDiarios([FromBody] List<CriarLancamentoDeGastoDiarioRequisicao> requisicao)
@@ -64,13 +64,14 @@ namespace ControleDeGastos.Controllers
         }
 
         [HttpPut("AtualizarLancamentosDeGastosDiarios")]
-        public async Task<IActionResult> AtualizarLancamentosDeGastosDiarios([FromQuery] AtualizarGastosDiariosRequisicao atualizarDiariosRequisicao)
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> AtualizarLancamentosDeGastosDiarios([FromBody] List<AtualizarGastosDiariosRequisicao> requisicao)
         {
             try
             {
-                //return (await controleDeGastosServico.AtualizarLancamentosDeGastosDiarios(atualizarDiariosRequisicao)).ToIActionResult(this);
-
-                throw new NotImplementedException();
+                return (await controleDeGastosServico.AtualizarLancamentosDeGastosDiarios(requisicao)).ToIActionResult(this);
             }
             catch (Exception ex) 
             {
@@ -84,7 +85,30 @@ namespace ControleDeGastos.Controllers
 
                 return StatusCode(StatusCodes.Status500InternalServerError, problem);
             }
+        }
 
+        [HttpDelete("FalsoDeleteLancamentosDeGastosDiarios")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> FalsoDeleteLancamentosDeGastosDiarios([FromQuery] int id)
+        {
+            try
+            {
+                return (await controleDeGastosServico.FalsoDeleteLancamentosDeGastosDiarios(id)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
         }
         #endregion
 

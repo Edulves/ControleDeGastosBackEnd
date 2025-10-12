@@ -12,7 +12,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
     public class ControleDeGastosServico(IControleDeGastosRepositorio controleDeGastosRepositorio, IOperacoesGenericas operacoesGenericas) : IControleDeGastosServico
     {
         #region GastosDiarios
-        public async Task<RespostaPadrao<List<GastosDiarios>>> CriarLancamentosDeGastosDiarios(List<CriarLancamentoDeGastoDiarioRequisicao> requisicao)
+        public async Task<RespostaPadrao<string>> CriarLancamentosDeGastosDiarios(List<CriarLancamentoDeGastoDiarioRequisicao> requisicao)
         {
             var modeloBanco = requisicao.Select(x => new GastosDiarios
             {
@@ -23,9 +23,9 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
                 Deletado = "",
             }).ToList();
 
-            var resultado = await operacoesGenericas.CriarAsync(modeloBanco);
+            await operacoesGenericas.CriarAsync(modeloBanco);
 
-            return RespostaPadrao<List<GastosDiarios>>.Success(resultado);
+            return RespostaPadrao<string>.Success("Gasto cadrastrado com sucesso!");
         }
 
         public async Task<RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>> ObterGastosDiarios(ObterGastosDiariosRequisicao obterGastosDiarios)
@@ -44,12 +44,43 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
                 DataDoLancamento = x.DataDoLancamento,
                 Valorgasto = x.Valorgasto,
                 Observacao = x.Observacao,
-                NomeCategoria = x.categoria.NomeDaCategoria,
+                NomeCategoria = x.categoria?.NomeDaCategoria ?? "",
             }).ToList();
 
             var respostaPaginada = (resposta, consulta.totalItens).ToPagedResult(obterGastosDiarios.Pagina, obterGastosDiarios.QtdPorPagina);
 
             return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Success(respostaPaginada);
+        }
+
+        public async Task<RespostaPadrao<string>> AtualizarLancamentosDeGastosDiarios(List<AtualizarGastosDiariosRequisicao> requisicao)
+        {
+            var modeloBanco = requisicao.Select(x => new GastosDiarios
+            {
+                IdGastos = x.IdGastos,
+                DataDoLancamento = x.DataDoLancamento,
+                Valorgasto = x.Valorgasto,
+                Observacao = x.Observacao,
+                CategoriaId = x.CategoriaId,
+                Deletado = "",
+            }).ToList();
+
+            await operacoesGenericas.AtualizarAsync(modeloBanco);
+
+            return RespostaPadrao<string>.Success("Itens atualizados com sucesso!");
+        }
+
+        public async Task<RespostaPadrao<string>> FalsoDeleteLancamentosDeGastosDiarios(int id)
+        {
+            var lancamentoParaFakeDelete = await controleDeGastosRepositorio.ObterGastoDiarioPorId(id);
+
+            if(lancamentoParaFakeDelete == null)
+                return RespostaPadrao<string>.Failure($"Não existe registro de id: {id}");
+
+            lancamentoParaFakeDelete.Deletado = "*";
+
+            await operacoesGenericas.AtualizarAsync(lancamentoParaFakeDelete);
+
+            return RespostaPadrao<string>.Success("Item 'deletado' com sucesso!");
         }
         #endregion
 

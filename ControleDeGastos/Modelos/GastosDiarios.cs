@@ -15,11 +15,12 @@ namespace ControleDeGastos.Models
         [Column("observacao")]
         public string? Observacao { get; set; }
         [Column("categoria_id")]
-        public int CategoriaId { get; set; }
+        public int? CategoriaId { get; set; }
         [Column("deletado")]
         public string Deletado { get; set; }
 
         // propriedades de navegacão
+        [ForeignKey("CategoriaId")]
         public CategoriasDeLancamentos categoria { get; set; }
     }
 }
