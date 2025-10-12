@@ -14,7 +14,7 @@ namespace ControleDeGastos.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ControleDeGastosController(AppDbContext context, IControleDeGastosServico controleDeGastosServico) : ControllerBase
+    public class ControleDeGastosController(IControleDeGastosServico controleDeGastosServico) : ControllerBase
     {
         #region GastosDiarios
         [HttpGet("ObterGastosDiarios")]
