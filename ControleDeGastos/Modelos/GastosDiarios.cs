@@ -17,7 +17,7 @@ namespace ControleDeGastos.Models
         [Column("categoria_id")]
         public int? CategoriaId { get; set; }
         [Column("deletado")]
-        public string Deletado { get; set; }
+        public string Deletado { get; set; } = string.Empty;
 
         // propriedades de navegacão
         [ForeignKey("CategoriaId")]

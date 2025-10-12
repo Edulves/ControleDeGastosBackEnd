@@ -15,7 +15,7 @@ public abstract class RequisicaoPaginada
     /// <summary>
     /// Quantidade de itens por página<br/> Valor Padrão = 10.
     /// </summary>
-    [Range(0.01, int.MaxValue, ErrorMessage = "O valor deve ser maior que zero.")]
+    [Range(1, int.MaxValue, ErrorMessage = "O valor deve ser maior que zero.")]
     public int QtdPorPagina { get; set; } = 10;
 }
 

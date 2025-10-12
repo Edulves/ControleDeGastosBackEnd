@@ -1,3 +1,4 @@
+using ClosedXML.Excel;
 using ControleDeGastos.Data.Contexto;
 using ControleDeGastos.Data.PadraoDeResposta.Extensao;
 using ControleDeGastos.Data.ResultadoPaginado;
@@ -13,7 +14,7 @@ namespace ControleDeGastos.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ControleDeGastosController(IControleDeGastosServico controleDeGastosServico) : ControllerBase
+    public class ControleDeGastosController(AppDbContext context, IControleDeGastosServico controleDeGastosServico) : ControllerBase
     {
         #region GastosDiarios
         [HttpGet("ObterGastosDiarios")]

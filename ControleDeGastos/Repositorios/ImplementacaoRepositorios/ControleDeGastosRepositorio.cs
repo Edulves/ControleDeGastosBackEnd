@@ -11,16 +11,19 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
     public class ControleDeGastosRepositorio(AppDbContext context) : IControleDeGastosRepositorio
     {
         #region GastosDiarios
-        public IQueryable<GastosDiarios> ObterGastosBase(ObterGastosDiariosRequisicao obterGastosDiarios)
+        public IQueryable<GastosDiarios> ObterGastosBase(ObterGastosDiariosRequisicao requisicao)
         {
             return context.gastos_diarios
             .FiltrarRemoverDeletados()
+            .FiltrarPorCategorias(requisicao.Categoria)
+            .FiltrarPorPeriodoDeLancamento(requisicao.InicioDoPeriodo, requisicao.FimDoPeriodo)
+            .Include(x => x.categoria)
             .OrderBy(x => x.DataDoLancamento)
             .ThenBy(x => x.IdGastos);
         }
-        public async Task<(List<GastosDiarios> itens, int totalItens)> ObterGastosDiarios(ObterGastosDiariosRequisicao obterGastosDiarios)
+        public async Task<(List<GastosDiarios> itens, int totalItens)> ObterGastosDiarios(ObterGastosDiariosRequisicao requisicao)
         {
-            return await ObterGastosBase(obterGastosDiarios).PaginarAsync(obterGastosDiarios.Pagina, obterGastosDiarios.QtdPorPagina);
+            return await ObterGastosBase(requisicao).PaginarAsync(requisicao.Pagina, requisicao.QtdPorPagina);
         }
         public async Task<GastosDiarios?> ObterGastoDiarioPorId(int id)
         {

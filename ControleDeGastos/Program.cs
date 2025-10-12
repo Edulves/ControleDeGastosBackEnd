@@ -1,5 +1,7 @@
 using ControleDeGastos.Data.Contexto;
+using ControleDeGastos.DTOs.Erros;
 using ControleDeGastos.InjecaoDeDependencias;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -19,6 +21,17 @@ builder.Services.AdicionarInjecaoDeRepositorios();
 // Adiciona o DbContext e injeta a connection string
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+
+builder.Services.AddControllers()
+.ConfigureApiBehaviorOptions(options =>
+{
+    options.SuppressModelStateInvalidFilter = true;
+});
+
+builder.Services.AddControllers(options =>
+{
+    options.Filters.Add<ErrosModelState>();
+});
 
 var app = builder.Build();
 
