@@ -24,7 +24,7 @@ namespace ControleDeGastos.Queries
             if(string.IsNullOrEmpty(Categoria))
                 return query;
             
-            return query.Where(x => x.categoria.NomeDaCategoria.Contains(Categoria));
+            return query.Where(x => x.categoria.NomeDaCategoria.Contains(Categoria.ToLower()));
         }
     }
 }

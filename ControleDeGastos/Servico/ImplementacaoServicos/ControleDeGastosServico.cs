@@ -8,6 +8,7 @@ using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
 using ControleDeGastos.DTOs.Resposta.GastosDiarios;
 using ControleDeGastos.DTOs.Requisicoes.CategoriasRequisicoes;
 using ControleDeGastos.Repositorios.ImplementacaoRepositorios;
+using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ControleDeGastos.Servico.ImplementacaoServicos
 {
@@ -29,12 +30,15 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
             return RespostaPadrao<string>.Success("Gasto cadrastrado com sucesso!");
         }
-        public async Task<RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>> ObterGastosDiarios(ObterGastosDiariosRequisicao obterGastosDiarios)
+        public async Task<RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>> ObterGastosDiarios(ObterGastosDiariosRequisicao requisicao)
         {
-            if (obterGastosDiarios.Pagina < 1)
+            if(requisicao.InicioDoPeriodo > requisicao.FimDoPeriodo)
+                return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Failure("Periodo de inicio não pode ser maior que o periodo de fim");
+
+            if (requisicao.Pagina < 1)
                 return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Failure("Pagina indicada não existe");
 
-            var consulta = await controleDeGastosRepositorio.ObterGastosDiarios(obterGastosDiarios);
+            var consulta = await controleDeGastosRepositorio.ObterGastosDiarios(requisicao);
 
             if (consulta.itens.Count <= 0)
                 return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Failure("Nenhu registro de gastos encontrado");
@@ -48,7 +52,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
                 NomeCategoria = x.categoria?.NomeDaCategoria ?? "",
             }).ToList();
 
-            var respostaPaginada = (resposta, consulta.totalItens).ToPagedResult(obterGastosDiarios.Pagina, obterGastosDiarios.QtdPorPagina);
+            var respostaPaginada = (resposta, consulta.totalItens).ToPagedResult(requisicao.Pagina, requisicao.QtdPorPagina);
 
             return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Success(respostaPaginada);
         }
@@ -97,7 +101,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
         {
             var novaCategoria = requisicao.Select(x => new CategoriasDeLancamentos()
             {
-                NomeDaCategoria = x.NomeCategoria,
+                NomeDaCategoria = x.NomeCategoria.ToLower(),
             }).ToList();
 
             await operacoesGenericas.CriarAsync(novaCategoria);
@@ -106,6 +110,11 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
         }
         public async Task<RespostaPadrao<string>> AtualizarCategorias(List<CategoriasDeLancamentos> requisicao)
         {
+            foreach (var item in requisicao)
+            {
+                item.NomeDaCategoria = item.NomeDaCategoria.ToLower();
+            }
+            
             await operacoesGenericas.AtualizarAsync(requisicao);
 
             return RespostaPadrao<string>.Success($"Categorias atualizadas com sucesso!");
