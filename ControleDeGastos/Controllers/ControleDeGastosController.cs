@@ -2,8 +2,9 @@ using ControleDeGastos.Data.Contexto;
 using ControleDeGastos.Data.PadraoDeResposta.Extensao;
 using ControleDeGastos.Data.ResultadoPaginado;
 using ControleDeGastos.DTOs.Erros;
-using ControleDeGastos.DTOs.Requisicao;
-using ControleDeGastos.DTOs.Resposta;
+using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
+using ControleDeGastos.DTOs.Requisicoes.CategoriasRequisicoes;
+using ControleDeGastos.DTOs.Resposta.GastosDiarios;
 using ControleDeGastos.Models;
 using ControleDeGastos.Servico.InterfaceServicos;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +13,7 @@ namespace ControleDeGastos.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ControleDeGastosController(AppDbContext context, IControleDeGastosServico controleDeGastosServico) : ControllerBase
+    public class ControleDeGastosController(IControleDeGastosServico controleDeGastosServico) : ControllerBase
     {
         #region GastosDiarios
         [HttpGet("ObterGastosDiarios")]
@@ -113,7 +114,6 @@ namespace ControleDeGastos.Controllers
         #endregion
 
         #region Categorias
-
         [HttpGet("ObterCategorias")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoriasDeLancamentos>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
@@ -137,51 +137,78 @@ namespace ControleDeGastos.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, problem);
             }
         }
+
+        [HttpPost("CriarCategorias")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoriasDeLancamentos>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> CriarCategorias([FromBody] List<CriarCategoriaRequisicao> request)
+        {
+            try
+            {
+                return (await controleDeGastosServico.CriarCategorias(request)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
+
+        [HttpPut("AtualizarCategorias")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoriasDeLancamentos>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> AtualizarCategorias([FromBody] List<CategoriasDeLancamentos> request)
+        {
+            try
+            {
+                return (await controleDeGastosServico.AtualizarCategorias(request)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
+
+        [HttpDelete("FalsoDeleteCategoria")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoriasDeLancamentos>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> FalsoDeleteCategoria([FromQuery] int id)
+        {
+            try
+            {
+                return (await controleDeGastosServico.FalsoDeleteCategoria(id)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
         #endregion
-
-
-        //[HttpPost("SubirExcel")]
-        //public async Task<IActionResult> SubirExcel([FromForm] IFormFile planilha)
-        //{
-        //    try
-        //    {
-        //        var dadosParaImportar = new List<GastosDiarios>();
-
-        //        using (var stream = planilha.OpenReadStream())
-        //        using (var workbook = new XLWorkbook(stream))
-        //        {
-        //            var worksheet = workbook.Worksheet(2);
-        //            var rows = worksheet.RowsUsed().Skip(1);
-
-        //            foreach (var row in rows)
-        //            {
-        //                if (row.Cell(1).GetValue<string>() == "Total")
-        //                    continue;
-
-        //                var dataDeLancamento = row.Cell(1).GetValue<DateTime>();
-        //                var valorGasto = row.Cell(2).GetValue<decimal>();
-        //                var observacao = row.Cell(3).GetValue<string>();
-        //                var idCategoria = row.Cell(5).GetValue<int>();
-
-        //                var novosLancamenos = new GastosDiarios(); 
-        //                novosLancamenos.DataDoLancamento = dataDeLancamento;
-        //                novosLancamenos.Valorgasto = valorGasto;
-        //                novosLancamenos.Observacao = observacao;
-        //                novosLancamenos.CategoriaId = idCategoria;
-
-        //                dadosParaImportar.Add(novosLancamenos);
-        //            }
-        //        }
-
-        //        await context.AddRangeAsync(dadosParaImportar);
-        //        await context.SaveChangesAsync();
-
-        //        return Ok(dadosParaImportar);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        return StatusCode(500, $"Erro ao processar o arquivo: {ex.Message}");
-        //    }
-        //}
     }
 }

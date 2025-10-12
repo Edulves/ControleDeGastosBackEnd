@@ -2,9 +2,9 @@
 
 namespace ControleDeGastos.Queries
 {
-    public static class GastosDiariosQuery
+    public static class GastosDiariosQueries
     {
-        public static IQueryable<GastosDiarios> FiltraRemoverDeletados(this IQueryable<GastosDiarios> query)
+        public static IQueryable<GastosDiarios> FiltrarRemoverDeletados(this IQueryable<GastosDiarios> query)
         { 
             return query.Where(x => x.Deletado != "*");
         }

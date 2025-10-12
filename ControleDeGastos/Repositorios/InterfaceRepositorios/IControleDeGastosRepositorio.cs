@@ -1,4 +1,4 @@
-﻿using ControleDeGastos.DTOs.Requisicao;
+﻿using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
 using ControleDeGastos.Models;
 
 namespace ControleDeGastos.Repositorios.InterfaceRepositorios
@@ -12,6 +12,7 @@ namespace ControleDeGastos.Repositorios.InterfaceRepositorios
 
         #region CategoriasDeGastos
         Task<List<CategoriasDeLancamentos>> ObterCategoriasDeLancamentos();
+        Task<CategoriasDeLancamentos?> ObterCategoriasDeLancamentosPorId(int id);
         #endregion
     }
 }

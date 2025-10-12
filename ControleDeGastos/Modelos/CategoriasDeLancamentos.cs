@@ -10,5 +10,7 @@ namespace ControleDeGastos.Models
         public int IdCategoriaDeLancamentos { get; set; }
         [Column("nome_da_categoria")]
         public string NomeDaCategoria { get; set; } = string.Empty;
+        [Column("deletado")]
+        public string Deletado { get; set; } = string.Empty;
     }
 }

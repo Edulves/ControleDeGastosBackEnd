@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ControleDeGastos.DTOs.Requisicao
+namespace ControleDeGastos.DTOs.Requisicao.GastosDiarios
 {
     public class AtualizarGastosDiariosRequisicao
     {   

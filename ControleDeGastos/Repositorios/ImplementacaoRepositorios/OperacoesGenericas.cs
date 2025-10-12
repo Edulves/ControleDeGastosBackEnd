@@ -13,7 +13,6 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
 
             return entidade;
         }
-
         public async Task<List<T>> CriarAsync<T>(List<T> entidade) where T : class
         {
             await context.AddRangeAsync(entidade);
@@ -21,7 +20,6 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
 
             return entidade;
         }
-
         public async Task<T> AtualizarAsync<T>(T entidade) where T : class
         {
             context.Update(entidade);
@@ -29,7 +27,6 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
 
             return entidade;
         }
-
         public async Task<List<T>> AtualizarAsync<T>(List<T> entidade) where T : class
         {
             context.UpdateRange(entidade);

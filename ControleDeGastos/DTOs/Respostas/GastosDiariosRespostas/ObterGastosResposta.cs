@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ControleDeGastos.DTOs.Resposta
+namespace ControleDeGastos.DTOs.Resposta.GastosDiarios
 {
     public class ObterGastosResposta
     {

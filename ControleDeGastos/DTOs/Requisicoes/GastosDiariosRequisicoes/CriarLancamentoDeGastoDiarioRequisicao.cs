@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ControleDeGastos.DTOs.Requisicao
+namespace ControleDeGastos.DTOs.Requisicao.GastosDiarios
 {
     public class CriarLancamentoDeGastoDiarioRequisicao
     {
