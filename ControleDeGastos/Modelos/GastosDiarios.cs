@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ControleDeGastos.Models
+namespace ControleDeGastos.Modelos
 {
     public class GastosDiarios
     {
         [Key]
-        [Column("id_gastos")]
-        public int IdGastos { get; set; }
+        [Column("id_gastos_diarios")]
+        public int IdGastosDiarios { get; set; }
         [Column("data_do_lancamento")]
         public DateTime DataDoLancamento { get; set; }
         [Column("valor_gasto", TypeName = "decimal(18,2)")]

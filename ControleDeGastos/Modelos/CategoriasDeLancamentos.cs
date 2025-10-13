@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ControleDeGastos.Models
+namespace ControleDeGastos.Modelos
 {
     public class CategoriasDeLancamentos
     {

@@ -1,12 +1,11 @@
-using ClosedXML.Excel;
-using ControleDeGastos.Data.Contexto;
 using ControleDeGastos.Data.PadraoDeResposta.Extensao;
 using ControleDeGastos.Data.ResultadoPaginado;
 using ControleDeGastos.DTOs.Erros;
 using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
 using ControleDeGastos.DTOs.Requisicoes.CategoriasRequisicoes;
+using ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes;
 using ControleDeGastos.DTOs.Resposta.GastosDiarios;
-using ControleDeGastos.Models;
+using ControleDeGastos.Modelos;
 using ControleDeGastos.Servico.InterfaceServicos;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +17,7 @@ namespace ControleDeGastos.Controllers
     {
         #region GastosDiarios
         [HttpGet("ObterGastosDiarios")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResultadoPaginado<ObterGastosResposta>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(ResultadoPaginado<ObterGastosDiariosResposta>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
         public async Task<IActionResult> ObterGastos([FromQuery] ObterGastosDiariosRequisicao requisicao)
@@ -196,6 +195,104 @@ namespace ControleDeGastos.Controllers
             try
             {
                 return (await controleDeGastosServico.FalsoDeleteCategoria(id)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
+        #endregion
+
+        #region GastosFixos
+        [HttpGet("ObterGastosFixos")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoriasDeLancamentos>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> ObterGastosFixos([FromQuery] ObterGastosFixosRequisicao requisicao)
+        {
+            try
+            {
+                return (await controleDeGastosServico.ObterGastosFixos(requisicao)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
+
+        [HttpPost("CriarGastosFixos")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoriasDeLancamentos>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> CriarGastosFixos([FromBody] List<CriarGastosFixosRequisicao> requisicao)
+        {
+            try
+            {
+                return (await controleDeGastosServico.CriarGastosFixos(requisicao)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
+
+        [HttpPut("AtualizarGastosFixos")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoriasDeLancamentos>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> AtualizarGastosFixos([FromBody] List<AtualizarGastosFixosRequisicao> requisicao)
+        {
+            try
+            {
+                return (await controleDeGastosServico.AtualizarGastosFixos(requisicao)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
+
+        [HttpDelete("FalsoDeleteGastosFixo")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoriasDeLancamentos>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> FalsoDeleteGastosFixo([FromQuery] int id)
+        {
+            try
+            {
+                return (await controleDeGastosServico.FalsoDeleteGastosFixo(id)).ToIActionResult(this);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,4 @@
-﻿using ControleDeGastos.Models;
+﻿using ControleDeGastos.Modelos;
 using Microsoft.EntityFrameworkCore;
 
 namespace ControleDeGastos.Data.Contexto
@@ -9,5 +9,6 @@ namespace ControleDeGastos.Data.Contexto
 
         public DbSet<CategoriasDeLancamentos> categorias_de_lancamentos { get; set; }
         public DbSet<GastosDiarios> gastos_diarios { get; set; }
+        public DbSet<GastosFixos> gastos_fixos { get; set; }
     }
 }

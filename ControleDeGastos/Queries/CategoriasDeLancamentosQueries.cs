@@ -1,4 +1,4 @@
-﻿using ControleDeGastos.Models;
+﻿using ControleDeGastos.Modelos;
 
 namespace ControleDeGastos.Queries
 {

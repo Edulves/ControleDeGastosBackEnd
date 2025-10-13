@@ -2,9 +2,9 @@
 
 namespace ControleDeGastos.DTOs.Resposta.GastosDiarios
 {
-    public class ObterGastosResposta
+    public class ObterGastosDiariosResposta
     {
-        public int IdGastos { get; set; }
+        public int IdGastosDiario { get; set; }
         public DateTime DataDoLancamento { get; set; }
         public decimal Valorgasto { get; set; }
         public string? Observacao { get; set; }

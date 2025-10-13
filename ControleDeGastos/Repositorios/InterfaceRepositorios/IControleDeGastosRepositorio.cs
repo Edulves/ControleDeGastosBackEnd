@@ -1,5 +1,7 @@
-﻿using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
-using ControleDeGastos.Models;
+﻿using ControleDeGastos.Data.PadraoDeResposta.Base;
+using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
+using ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes;
+using ControleDeGastos.Modelos;
 
 namespace ControleDeGastos.Repositorios.InterfaceRepositorios
 {
@@ -13,6 +15,11 @@ namespace ControleDeGastos.Repositorios.InterfaceRepositorios
         #region CategoriasDeGastos
         Task<List<CategoriasDeLancamentos>> ObterCategoriasDeLancamentos();
         Task<CategoriasDeLancamentos?> ObterCategoriasDeLancamentosPorId(int id);
+        #endregion
+
+        #region GastosFixos
+        Task<(List<GastosFixos> itens, int totalItens)> ObterGastosFixos(ObterGastosFixosRequisicao requisicao);
+        Task<GastosFixos?> ObterGastosFixosPorId(int id);
         #endregion
     }
 }

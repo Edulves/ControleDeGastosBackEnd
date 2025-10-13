@@ -1,14 +1,13 @@
-﻿using ControleDeGastos.Data.ResultadoPaginado;
+﻿using ControleDeGastos.Data.PadraoDeResposta.Base;
+using ControleDeGastos.Data.ResultadoPaginado;
 using ControleDeGastos.Data.ResultadoPaginado.Extensoes;
-using ControleDeGastos.Models;
+using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
+using ControleDeGastos.DTOs.Requisicoes.CategoriasRequisicoes;
+using ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes;
+using ControleDeGastos.DTOs.Resposta.GastosDiarios;
+using ControleDeGastos.Modelos;
 using ControleDeGastos.Repositorios.InterfaceRepositorios;
 using ControleDeGastos.Servico.InterfaceServicos;
-using ControleDeGastos.Data.PadraoDeResposta.Base;
-using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
-using ControleDeGastos.DTOs.Resposta.GastosDiarios;
-using ControleDeGastos.DTOs.Requisicoes.CategoriasRequisicoes;
-using ControleDeGastos.Repositorios.ImplementacaoRepositorios;
-using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace ControleDeGastos.Servico.ImplementacaoServicos
 {
@@ -30,22 +29,22 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
             return RespostaPadrao<string>.Success("Gasto cadrastrado com sucesso!");
         }
-        public async Task<RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>> ObterGastosDiarios(ObterGastosDiariosRequisicao requisicao)
+        public async Task<RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>> ObterGastosDiarios(ObterGastosDiariosRequisicao requisicao)
         {
             if(requisicao.InicioDoPeriodo > requisicao.FimDoPeriodo)
-                return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Failure("Periodo de inicio não pode ser maior que o periodo de fim");
+                return RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>.Failure("Periodo de inicio não pode ser maior que o periodo de fim");
 
             if (requisicao.Pagina < 1)
-                return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Failure("Pagina indicada não existe");
+                return RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>.Failure("Pagina indicada não existe");
 
             var consulta = await controleDeGastosRepositorio.ObterGastosDiarios(requisicao);
 
             if (consulta.itens.Count <= 0)
-                return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Failure("Nenhu registro de gastos encontrado");
+                return RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>.Failure("Nenhu registro de gastos encontrado");
 
-            var resposta = consulta.itens.Select(x => new ObterGastosResposta
+            var resposta = consulta.itens.Select(x => new ObterGastosDiariosResposta
             {
-                IdGastos = x.IdGastos,
+                IdGastosDiario = x.IdGastosDiarios,
                 DataDoLancamento = x.DataDoLancamento,
                 Valorgasto = x.Valorgasto,
                 Observacao = x.Observacao,
@@ -54,19 +53,28 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
             var respostaPaginada = (resposta, consulta.totalItens).ToPagedResult(requisicao.Pagina, requisicao.QtdPorPagina);
 
-            return RespostaPadrao<ResultadoPaginado<ObterGastosResposta>>.Success(respostaPaginada);
+            return RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>.Success(respostaPaginada);
         }
         public async Task<RespostaPadrao<string>> AtualizarLancamentosDeGastosDiarios(List<AtualizarGastosDiariosRequisicao> requisicao)
         {
-            var modeloBanco = requisicao.Select(x => new GastosDiarios
+            if (requisicao.Count <= 0)
+                return RespostaPadrao<string>.Failure($"Nenhum item para atualizar");
+
+            var modeloBanco = new List<GastosDiarios>();
+
+            foreach (var item in requisicao)
             {
-                IdGastos = x.IdGastos,
-                DataDoLancamento = x.DataDoLancamento,
-                Valorgasto = x.Valorgasto,
-                Observacao = x.Observacao,
-                CategoriaId = x.CategoriaId,
-                Deletado = "",
-            }).ToList();
+                var consulta = await controleDeGastosRepositorio.ObterGastoDiarioPorId(item.IdGastosDiario);
+                if (consulta == null)
+                    return RespostaPadrao<string>.Failure($"Nenhum gasto diario de id: {item.IdGastosDiario} encontrado");
+
+                consulta.DataDoLancamento = item.DataDoLancamento == DateTime.MinValue ? consulta.DataDoLancamento : item.DataDoLancamento;
+                consulta.Valorgasto = item.Valorgasto <= 0 ? consulta.Valorgasto : item.Valorgasto;
+                consulta.Observacao = string.IsNullOrEmpty(item.Observacao) ? consulta.Observacao : item.Observacao;
+                consulta.CategoriaId = item.CategoriaId <= 0 ? consulta.CategoriaId : item.CategoriaId;
+
+                modeloBanco.Add(consulta);
+            }
 
             await operacoesGenericas.AtualizarAsync(modeloBanco);
 
@@ -131,6 +139,75 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             await operacoesGenericas.AtualizarAsync(consulta);
 
             return RespostaPadrao<string>.Success($"Categoria deletada com sucesso!");
+        }
+        #endregion
+
+        #region GastosFixos
+        public async Task<RespostaPadrao<ResultadoPaginado<GastosFixos>>> ObterGastosFixos(ObterGastosFixosRequisicao requisicao)
+        {
+            if (requisicao.InicioDoPeriodo > requisicao.FimDoPeriodo)
+                return RespostaPadrao<ResultadoPaginado<GastosFixos>>.Failure("Periodo de inicio não pode ser maior que o periodo de fim");
+
+            if (requisicao.Pagina < 1)
+                return RespostaPadrao<ResultadoPaginado<GastosFixos>>.Failure("Pagina indicada não existe");
+
+            var consulta = await controleDeGastosRepositorio.ObterGastosFixos(requisicao);
+
+            var respostaPaginada = (consulta.itens, consulta.totalItens).ToPagedResult(requisicao.Pagina, requisicao.QtdPorPagina);
+
+            return RespostaPadrao<ResultadoPaginado<GastosFixos>>.Success(respostaPaginada);
+        }
+        public async Task<RespostaPadrao<string>> CriarGastosFixos(List<CriarGastosFixosRequisicao> requisicao)
+        {
+
+            var mapeamentoModelo = requisicao.Select(x => new GastosFixos
+            {
+                DescricaoGastoFixo = x.DescricaoGastoFixo,
+                ValorGastoFixo = x.ValorGastoFixo,
+                DataDoLancamento = x.DataLancamento
+            }).ToList();
+
+            await operacoesGenericas.CriarAsync(mapeamentoModelo);
+
+            return RespostaPadrao<string>.Success("Gastos fixo criados com sucesso!");
+        }
+        public async Task<RespostaPadrao<string>> AtualizarGastosFixos(List<AtualizarGastosFixosRequisicao> requisicao)
+        {
+            if(requisicao.Count <= 0)
+                return RespostaPadrao<string>.Failure($"Nenhum item para atualizar");
+
+            var modeloBanco = new List<GastosFixos>();
+
+            foreach (var item in requisicao)
+            {
+                var consulta = await controleDeGastosRepositorio.ObterGastosFixosPorId(item.IdGastosFixos);
+                if (consulta == null)
+                    return RespostaPadrao<string>.Failure($"Nenhum gasto fixo de id: {item.IdGastosFixos} encontrado");
+
+                consulta.DescricaoGastoFixo = string.IsNullOrEmpty(item.DescricaoGastoFixo) ? consulta.DescricaoGastoFixo : item.DescricaoGastoFixo;
+                consulta.ValorGastoFixo = item.ValorGastoFixo <= 0 ? consulta.ValorGastoFixo : item.ValorGastoFixo;
+                consulta.Pago = item.Pago ?? consulta.Pago;
+                consulta.DataDoLancamento = item.DataDoLancamento == DateTime.MinValue ? consulta.DataDoLancamento : item.DataDoLancamento;
+
+                modeloBanco.Add(consulta);
+            }
+
+            await operacoesGenericas.AtualizarAsync(modeloBanco);
+
+            return RespostaPadrao<string>.Success("Gastos fixo atualizados com sucesso!");
+        }
+        public async Task<RespostaPadrao<string>> FalsoDeleteGastosFixo(int id)
+        {
+            var lancamentoParaFakeDelete = await controleDeGastosRepositorio.ObterGastosFixosPorId(id);
+
+            if (lancamentoParaFakeDelete == null)
+                return RespostaPadrao<string>.Failure($"Não existe registro de id: {id}");
+
+            lancamentoParaFakeDelete.Deletado = "*";
+
+            await operacoesGenericas.AtualizarAsync(lancamentoParaFakeDelete);
+
+            return RespostaPadrao<string>.Success("Item 'deletado' com sucesso!");
         }
         #endregion
     }
