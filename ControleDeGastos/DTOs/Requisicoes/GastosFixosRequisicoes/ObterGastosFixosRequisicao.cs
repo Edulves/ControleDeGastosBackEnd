@@ -6,6 +6,8 @@ namespace ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes
     {
         public DateTime InicioDoPeriodo { get; set; }
         public DateTime FimDoPeriodo { get; set; }
+        public int Mes { get; set; }
+        public int Ano { get; set; }
         public string DescricaoDoGasto { get; set; } = string.Empty;
     }
 }

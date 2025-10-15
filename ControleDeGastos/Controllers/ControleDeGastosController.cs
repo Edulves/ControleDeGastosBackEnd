@@ -359,6 +359,54 @@ namespace ControleDeGastos.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, problem);
             }
         }
+
+        [HttpGet("ObterValorTotaisGastosFixosPagoVsNao")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ObterGastosDiariosConsolidadosPorCategoriaRequisicao>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> ObterValorTotaisGastosFixosPagoVsNao([FromQuery] ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao)
+        {
+            try
+            {
+                return (await controleDeGastosServico.ObterValorGastosFixosTotaisPagoVsNao(requisicao)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
+
+        [HttpGet("ObterTotalDeGastos")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ObterGastosDiariosConsolidadosPorCategoriaRequisicao>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
+        public async Task<IActionResult> ObterTotalDeGastos([FromQuery] ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao)
+        {
+            try
+            {
+                return (await controleDeGastosServico.ObterTotalDeGastos(requisicao)).ToIActionResult(this);
+            }
+            catch (Exception ex)
+            {
+                var problem = new DetalhesDeProblemas
+                {
+                    Status = StatusCodes.Status500InternalServerError,
+                    Titulo = "Erro interno no servidor",
+                    Detalhe = ex.Message,
+                    Instancia = HttpContext.Request.Path
+                };
+
+                return StatusCode(StatusCodes.Status500InternalServerError, problem);
+            }
+        }
         #endregion
     }
 }

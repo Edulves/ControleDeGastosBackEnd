@@ -36,6 +36,8 @@ namespace ControleDeGastos.Servico.InterfaceServicos
         #region Consolidado
         Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>> ObterSomaDeGastoPorCategoria(ObterGastosDiariosConsolidadosPorCategoriaRequisicao requisicao);
         Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>> ObterSomaDeGastoPorDia(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao);
+        Task<RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>> ObterValorGastosFixosTotaisPagoVsNao(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao);
+        Task<RespostaPadrao<ObterTotalDeGastos>> ObterTotalDeGastos(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao);
         #endregion
     }
 }

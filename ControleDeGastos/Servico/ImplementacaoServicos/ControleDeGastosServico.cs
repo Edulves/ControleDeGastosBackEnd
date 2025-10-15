@@ -217,7 +217,15 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
         #region Consolidado
         public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>> ObterSomaDeGastoPorCategoria(ObterGastosDiariosConsolidadosPorCategoriaRequisicao requisicao)
         {
-            var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(requisicao);
+            var filtro = new ObterGastosDiariosRequisicao()
+            {
+                InicioDoPeriodo = requisicao.InicioDoPeriodo,
+                FimDoPeriodo = requisicao.FimDoPeriodo,
+                Ano = requisicao.Ano,
+                Mes = requisicao.Mes
+            };
+
+            var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
             
             if(consultaGastosDiarios.Count <= 0)
                 return RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>.Failure("NenhumGastoDiarioEncontrado");
@@ -239,9 +247,9 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
         public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>> ObterSomaDeGastoPorDia(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao)
         {
-            var filtro = new ObterGastosDiariosConsolidadosPorCategoriaRequisicao() { 
-                Mes = requisicao.Mes,
+            var filtro = new ObterGastosDiariosRequisicao() {
                 Ano = requisicao.Ano,
+                Mes = requisicao.Mes
             };
 
             var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
@@ -250,7 +258,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
                 return RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>.Failure("NenhumGastoDiarioEncontrado");
 
             var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.DataDoLancamento.Date);
-
+           
             var GastosPorCategoria = consultaAgrupada.Select(x => new ObterGastosDiariosConsolidadosPorDiaResposta()
             {
                 DataLancamento =  x.Key,
@@ -262,6 +270,51 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             resposta.Total = resposta.ListaDeGastosPorDia.Sum(x => x.ValorPorDia);
 
             return RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>.Success(resposta);
+        }
+
+        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>> ObterValorGastosFixosTotaisPagoVsNao(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao)
+        {
+            var filtro = new ObterGastosFixosRequisicao()
+            {
+                Ano = requisicao.Ano,
+                Mes = requisicao.Mes,
+            };
+
+            var consultaGastosFixos = await controleDeGastosRepositorio.ObterGastosFixosLista(filtro);
+
+            if (consultaGastosFixos.Count <= 0)
+                return RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>.Failure("NenhumGastoFixoEncontrado");
+
+            var resposta = new ObterGastosDiariosConsolidadosPagoVsNaoResposta()
+            {
+                ValorPago = consultaGastosFixos.Where(x => x.Pago).Sum(x => x.ValorGastoFixo),
+                ValorNaoPago = consultaGastosFixos.Where(x => !x.Pago).Sum(x => x.ValorGastoFixo),
+            };
+
+            return RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>.Success(resposta);
+        }
+
+        public async Task<RespostaPadrao<ObterTotalDeGastos>> ObterTotalDeGastos(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao)
+        {
+            var filtro = new ObterGastosDiariosRequisicao()
+            {
+                Ano = requisicao.Ano,
+                Mes = requisicao.Mes,
+            };
+
+            var somaGastosDiarios = await controleDeGastosRepositorio.ObterSomaGastosDiarios(filtro);
+
+            var filtro2 = new ObterGastosFixosRequisicao()
+            {
+                Ano = requisicao.Ano,
+                Mes = requisicao.Mes,
+            };
+
+            var somaGastosFixos = await controleDeGastosRepositorio.ObterSomaGastosFixos(filtro2);
+
+            var resposta = new ObterTotalDeGastos() { TotalGastos = somaGastosDiarios + somaGastosFixos };
+
+            return RespostaPadrao<ObterTotalDeGastos>.Success(resposta);
         }
         #endregion
     }
