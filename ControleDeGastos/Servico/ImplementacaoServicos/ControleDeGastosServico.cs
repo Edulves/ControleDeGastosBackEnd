@@ -3,11 +3,14 @@ using ControleDeGastos.Data.ResultadoPaginado;
 using ControleDeGastos.Data.ResultadoPaginado.Extensoes;
 using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
 using ControleDeGastos.DTOs.Requisicoes.CategoriasRequisicoes;
+using ControleDeGastos.DTOs.Requisicoes.ConsolidadoRequisicoes;
 using ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes;
 using ControleDeGastos.DTOs.Resposta.GastosDiarios;
+using ControleDeGastos.DTOs.Respostas.ConsolidadoRespostas;
 using ControleDeGastos.Modelos;
 using ControleDeGastos.Repositorios.InterfaceRepositorios;
 using ControleDeGastos.Servico.InterfaceServicos;
+using System.Linq;
 
 namespace ControleDeGastos.Servico.ImplementacaoServicos
 {
@@ -37,7 +40,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             if (requisicao.Pagina < 1)
                 return RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>.Failure("Pagina indicada não existe");
 
-            var consulta = await controleDeGastosRepositorio.ObterGastosDiarios(requisicao);
+            var consulta = await controleDeGastosRepositorio.ObterGastosDiariosPaginado(requisicao);
 
             if (consulta.itens.Count <= 0)
                 return RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>.Failure("Nenhu registro de gastos encontrado");
@@ -208,6 +211,57 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             await operacoesGenericas.AtualizarAsync(lancamentoParaFakeDelete);
 
             return RespostaPadrao<string>.Success("Item 'deletado' com sucesso!");
+        }
+        #endregion
+
+        #region Consolidado
+        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>> ObterSomaDeGastoPorCategoria(ObterGastosDiariosConsolidadosPorCategoriaRequisicao requisicao)
+        {
+            var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(requisicao);
+            
+            if(consultaGastosDiarios.Count <= 0)
+                return RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>.Failure("NenhumGastoDiarioEncontrado");
+
+            var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.CategoriaId);
+
+            var GastosPorCategoria = consultaAgrupada.Select(x => new ObterGastosDiariosConsolidadosPorCategoriasResposta()
+            {
+                NomeDaCategoria = x.First().categoria.NomeDaCategoria,
+                ValorPorDia = x.Sum(x => x.Valorgasto),
+            }).OrderByDescending(x => x.ValorPorDia).ToList();
+
+            var resposta = new ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta();
+            resposta.ListaDeGastosPorCategoria.AddRange(GastosPorCategoria);
+            resposta.TotalDeGastos = resposta.ListaDeGastosPorCategoria.Sum(x => x.ValorPorDia);
+
+            return RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>.Success(resposta);
+        }
+
+        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>> ObterSomaDeGastoPorDia(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao)
+        {
+            var filtro = new ObterGastosDiariosConsolidadosPorCategoriaRequisicao() { 
+                Mes = requisicao.Mes,
+                Ano = requisicao.Ano,
+            };
+
+            var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
+
+            if (consultaGastosDiarios.Count <= 0)
+                return RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>.Failure("NenhumGastoDiarioEncontrado");
+
+            var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.DataDoLancamento.Date);
+
+            var GastosPorCategoria = consultaAgrupada.Select(x => new ObterGastosDiariosConsolidadosPorDiaResposta()
+            {
+                DataLancamento =  x.Key,
+                ValorPorDia = x.Sum(x => x.Valorgasto)
+            }).OrderBy(x => x.DataLancamento).ToList();
+
+            var resposta = new ObterGastosDiariosConsolidadosPorDiaComTotaisResposta();
+            resposta.ListaDeGastosPorDia.AddRange(GastosPorCategoria);
+            resposta.Total = resposta.ListaDeGastosPorDia.Sum(x => x.ValorPorDia);
+
+            return RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>.Success(resposta);
         }
         #endregion
     }

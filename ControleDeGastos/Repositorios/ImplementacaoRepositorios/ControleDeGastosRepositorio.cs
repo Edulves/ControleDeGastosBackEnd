@@ -1,6 +1,7 @@
 ﻿using ControleDeGastos.Data.Contexto;
 using ControleDeGastos.Data.ResultadoPaginado.Extensoes;
 using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
+using ControleDeGastos.DTOs.Requisicoes.ConsolidadoRequisicoes;
 using ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes;
 using ControleDeGastos.Modelos;
 using ControleDeGastos.Queries;
@@ -12,19 +13,20 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
     public class ControleDeGastosRepositorio(AppDbContext context) : IControleDeGastosRepositorio
     {
         #region GastosDiarios
-        public IQueryable<GastosDiarios> ObterGastosDiariosBase(ObterGastosDiariosRequisicao requisicao)
+        public IQueryable<GastosDiarios> ObterGastosDiariosBase()
         {
             return context.gastos_diarios
             .FiltrarRemoverDeletados()
-            .FiltrarPorCategorias(requisicao.Categoria)
-            .FiltrarPorPeriodoDeLancamento(requisicao.InicioDoPeriodo, requisicao.FimDoPeriodo)
             .Include(x => x.categoria)
             .OrderBy(x => x.DataDoLancamento)
             .ThenBy(x => x.IdGastosDiarios);
         }
-        public async Task<(List<GastosDiarios> itens, int totalItens)> ObterGastosDiarios(ObterGastosDiariosRequisicao requisicao)
+        public async Task<(List<GastosDiarios> itens, int totalItens)> ObterGastosDiariosPaginado(ObterGastosDiariosRequisicao requisicao)
         {
-            return await ObterGastosDiariosBase(requisicao).PaginarAsync(requisicao.Pagina, requisicao.QtdPorPagina);
+            return await ObterGastosDiariosBase()
+            .FiltrarPorCategorias(requisicao.Categoria)
+            .FiltrarPorPeriodoDeLancamento(requisicao.InicioDoPeriodo, requisicao.FimDoPeriodo)
+            .PaginarAsync(requisicao.Pagina, requisicao.QtdPorPagina);
         }
         public async Task<GastosDiarios?> ObterGastoDiarioPorId(int id)
         {
@@ -64,6 +66,16 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
         public async Task<GastosFixos?> ObterGastosFixosPorId(int id)
         {
             return await context.gastos_fixos.FindAsync(id);
+        }
+        #endregion
+
+        #region Consolidado
+        public async Task<List<GastosDiarios>> ObterGastosDiariosLista(ObterGastosDiariosConsolidadosPorCategoriaRequisicao requisicao)
+        {
+            return await ObterGastosDiariosBase()
+            .FiltrarPorPeriodoDeLancamento(requisicao.InicioDoPeriodo, requisicao.FimDoPeriodo)
+            .FiltrarPorMeseAno(requisicao.Ano, requisicao.Mes)
+            .ToListAsync();
         }
         #endregion
     }
