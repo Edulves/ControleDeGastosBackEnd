@@ -170,6 +170,12 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
                 DataDoLancamento = x.DataLancamento
             }).ToList();
 
+            foreach (var item in mapeamentoModelo)
+            {
+                if (item.DataDoLancamento == DateTime.MinValue)
+                    return RespostaPadrao<string>.Failure("Data inválida");
+            }
+
             await operacoesGenericas.CriarAsync(mapeamentoModelo);
 
             return RespostaPadrao<string>.Success("Gastos fixo criados com sucesso!");

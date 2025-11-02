@@ -33,11 +33,26 @@ builder.Services.AddControllers(options =>
     options.Filters.Add<ErrosModelState>();
 });
 
+
+// Configura CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowLocalhost",
+        policy =>
+        {
+            policy
+                .AllowAnyOrigin()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseCors("AllowLocalhost");
     app.MapOpenApi();
     app.MapScalarApiReference();
 }
