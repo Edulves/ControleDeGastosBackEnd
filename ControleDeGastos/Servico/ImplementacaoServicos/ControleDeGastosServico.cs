@@ -19,6 +19,9 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
         #region GastosDiarios
         public async Task<RespostaPadrao<string>> CriarLancamentosDeGastosDiarios(List<CriarLancamentoDeGastoDiarioRequisicao> requisicao)
         {
+            if (requisicao.Count <= 0)
+                return RespostaPadrao<string>.Failure("Nenhuma dado foi enviado para cadastro!");
+
             var modeloBanco = requisicao.Select(x => new GastosDiarios
             {
                 DataDoLancamento = x.DataDoLancamento,
@@ -234,19 +237,19 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
             
             if(consultaGastosDiarios.Count <= 0)
-                return RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>.Failure("NenhumGastoDiarioEncontrado");
+                return RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>.Failure("Nenhum gasto encontrado para os filtros ultilizados");
 
             var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.CategoriaId);
 
             var GastosPorCategoria = consultaAgrupada.Select(x => new ObterGastosDiariosConsolidadosPorCategoriasResposta()
             {
                 NomeDaCategoria = x.First().categoria.NomeDaCategoria,
-                ValorPorDia = x.Sum(x => x.Valorgasto),
-            }).OrderByDescending(x => x.ValorPorDia).ToList();
+                ValorGasto = x.Sum(x => x.Valorgasto),
+            }).OrderByDescending(x => x.ValorGasto).ToList();
 
             var resposta = new ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta();
             resposta.ListaDeGastosPorCategoria.AddRange(GastosPorCategoria);
-            resposta.TotalDeGastos = resposta.ListaDeGastosPorCategoria.Sum(x => x.ValorPorDia);
+            resposta.TotalDeGastos = resposta.ListaDeGastosPorCategoria.Sum(x => x.ValorGasto);
 
             return RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>.Success(resposta);
         }
@@ -261,7 +264,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
 
             if (consultaGastosDiarios.Count <= 0)
-                return RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>.Failure("NenhumGastoDiarioEncontrado");
+                return RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>.Failure("Nenhum gasto diario encontrado");
 
             var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.DataDoLancamento.Date);
            
@@ -316,9 +319,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
                 Mes = requisicao.Mes,
             };
 
-            var somaGastosFixos = await controleDeGastosRepositorio.ObterSomaGastosFixos(filtro2);
-
-            var resposta = new ObterTotalDeGastos() { TotalGastos = somaGastosDiarios + somaGastosFixos };
+            var resposta = new ObterTotalDeGastos() { TotalGastos = somaGastosDiarios };
 
             return RespostaPadrao<ObterTotalDeGastos>.Success(resposta);
         }

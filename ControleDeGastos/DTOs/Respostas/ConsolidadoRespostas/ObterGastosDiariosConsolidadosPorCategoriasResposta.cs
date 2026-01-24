@@ -3,6 +3,6 @@
     public class ObterGastosDiariosConsolidadosPorCategoriasResposta
     {
         public string NomeDaCategoria { get; set; }
-        public decimal ValorPorDia { get; set; }
+        public decimal ValorGasto { get; set; }
     }
 }

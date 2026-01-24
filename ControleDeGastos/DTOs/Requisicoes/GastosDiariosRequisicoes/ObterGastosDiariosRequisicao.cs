@@ -10,5 +10,6 @@ namespace ControleDeGastos.DTOs.Requisicao.GastosDiarios
         public DateTime InicioDoPeriodo { get; set; } = DateTime.MinValue;
         public DateTime FimDoPeriodo { get; set; } = DateTime.MinValue;
         public string Categoria { get; set; } = string.Empty;
+        public string Observacao { get; set; } = string.Empty;
     }
 }

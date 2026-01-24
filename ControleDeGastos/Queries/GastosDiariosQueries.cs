@@ -33,5 +33,13 @@ namespace ControleDeGastos.Queries
             
             return query.Where(x => x.categoria.NomeDaCategoria.Contains(Categoria.ToLower()));
         }
+
+        public static IQueryable<GastosDiarios> FiltrarPorObservacao(this IQueryable<GastosDiarios> query, string Observacao)
+        {
+            if (string.IsNullOrEmpty(Observacao))
+                return query;
+
+            return query.Where(x => x.Observacao.Contains(Observacao.ToLower()));
+        }
     }
 }

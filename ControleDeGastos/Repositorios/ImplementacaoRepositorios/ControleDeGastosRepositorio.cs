@@ -19,6 +19,7 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
             .FiltrarPorCategorias(requisicao.Categoria)
             .FiltrarPorPeriodoDeLancamento(requisicao.InicioDoPeriodo, requisicao.FimDoPeriodo)
             .FiltrarPorMeseAno(requisicao.Ano, requisicao.Mes)
+            .FiltrarPorObservacao(requisicao.Observacao)
             .FiltrarRemoverDeletados()
             .Include(x => x.categoria)
             .OrderBy(x => x.DataDoLancamento)
@@ -49,7 +50,7 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
         }
         public async Task<List<CategoriasDeLancamentos>> ObterCategoriasDeLancamentos()
         {
-            return await ObterCategoriasDeLancamentosBase().ToListAsync();
+            return await ObterCategoriasDeLancamentosBase().OrderBy(x => x.NomeDaCategoria).ToListAsync();
         }
         public async Task<CategoriasDeLancamentos?> ObterCategoriasDeLancamentosPorId(int id)
         {
