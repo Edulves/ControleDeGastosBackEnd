@@ -193,8 +193,16 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             foreach (var item in requisicao)
             {
                 var consulta = await controleDeGastosRepositorio.ObterGastosFixosPorId(item.IdGastosFixos);
-                if (consulta == null)
-                    return RespostaPadrao<string>.Failure($"Nenhum gasto fixo de id: {item.IdGastosFixos} encontrado");
+                if (consulta == null){
+                    modeloBanco.Add(new GastosFixos()
+                    {
+                        DescricaoGastoFixo = item.DescricaoGastoFixo,
+                        ValorGastoFixo = item.ValorGastoFixo,
+                        DataDoLancamento = item.DataDoLancamento
+                    });
+
+                    continue;
+                }
 
                 consulta.DescricaoGastoFixo = string.IsNullOrEmpty(item.DescricaoGastoFixo) ? consulta.DescricaoGastoFixo : item.DescricaoGastoFixo;
                 consulta.ValorGastoFixo = item.ValorGastoFixo <= 0 ? consulta.ValorGastoFixo : item.ValorGastoFixo;

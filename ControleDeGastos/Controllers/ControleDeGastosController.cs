@@ -287,7 +287,7 @@ namespace ControleDeGastos.Controllers
         }
 
         [HttpDelete("FalsoDeleteGastosFixo")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<CategoriasDeLancamentos>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
         public async Task<IActionResult> FalsoDeleteGastosFixo([FromQuery] int id)
