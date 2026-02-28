@@ -321,12 +321,6 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
             var somaGastosDiarios = await controleDeGastosRepositorio.ObterSomaGastosDiarios(filtro);
 
-            var filtro2 = new ObterGastosFixosRequisicao()
-            {
-                Ano = requisicao.Ano,
-                Mes = requisicao.Mes,
-            };
-
             var resposta = new ObterTotalDeGastos() { TotalGastos = somaGastosDiarios };
 
             return RespostaPadrao<ObterTotalDeGastos>.Success(resposta);

@@ -1,7 +1,6 @@
 ﻿using ControleDeGastos.Data.Contexto;
 using ControleDeGastos.Data.ResultadoPaginado.Extensoes;
 using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
-using ControleDeGastos.DTOs.Requisicoes.ConsolidadoRequisicoes;
 using ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes;
 using ControleDeGastos.Modelos;
 using ControleDeGastos.Queries;
