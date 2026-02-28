@@ -34,10 +34,10 @@ namespace ControleDeGastos.Servico.InterfaceServicos
         #endregion
 
         #region Consolidado
-        Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>> ObterSomaDeGastoPorCategoria(ObterGastosDiariosConsolidadosPorCategoriaRequisicao requisicao);
-        Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>> ObterSomaDeGastoPorDia(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao);
-        Task<RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>> ObterValorGastosFixosTotaisPagoVsNao(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao);
-        Task<RespostaPadrao<ObterTotalDeGastos>> ObterTotalDeGastos(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao);
+        Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>> ObterSomaDeGastoPorCategoria(GetByFullDateMothDayRequest requisicao);
+        Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>> ObterSomaDeGastoPorDia(GetByMothDayRequest requisicao);
+        Task<RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>> ObterValorGastosFixosTotaisPagoVsNao(GetByMothDayRequest requisicao);
+        Task<RespostaPadrao<ObterTotalDeGastos>> ObterTotalDeGastos(GetByMothDayRequest requisicao);
         #endregion
     }
 }

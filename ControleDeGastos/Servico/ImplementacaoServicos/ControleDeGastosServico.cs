@@ -232,14 +232,14 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
         #endregion
 
         #region Consolidado
-        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>> ObterSomaDeGastoPorCategoria(ObterGastosDiariosConsolidadosPorCategoriaRequisicao requisicao)
+        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>> ObterSomaDeGastoPorCategoria(GetByFullDateMothDayRequest requisicao)
         {
             var filtro = new ObterGastosDiariosRequisicao()
             {
-                InicioDoPeriodo = requisicao.InicioDoPeriodo,
-                FimDoPeriodo = requisicao.FimDoPeriodo,
-                Ano = requisicao.Ano,
-                Mes = requisicao.Mes
+                InicioDoPeriodo = requisicao.BeginningOfPeriod,
+                FimDoPeriodo = requisicao.EndOfPeriod,
+                Ano = requisicao.Year,
+                Mes = requisicao.Month
             };
 
             var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
@@ -262,11 +262,11 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             return RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>.Success(resposta);
         }
 
-        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>> ObterSomaDeGastoPorDia(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao)
+        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>> ObterSomaDeGastoPorDia(GetByMothDayRequest requisicao)
         {
             var filtro = new ObterGastosDiariosRequisicao() {
-                Ano = requisicao.Ano,
-                Mes = requisicao.Mes
+                Ano = requisicao.Year,
+                Mes = requisicao.Month
             };
 
             var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
@@ -289,12 +289,12 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             return RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>.Success(resposta);
         }
 
-        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>> ObterValorGastosFixosTotaisPagoVsNao(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao)
+        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>> ObterValorGastosFixosTotaisPagoVsNao(GetByMothDayRequest requisicao)
         {
             var filtro = new ObterGastosFixosRequisicao()
             {
-                Ano = requisicao.Ano,
-                Mes = requisicao.Mes,
+                Ano = requisicao.Year,
+                Mes = requisicao.Month,
             };
 
             var consultaGastosFixos = await controleDeGastosRepositorio.ObterGastosFixosLista(filtro);
@@ -311,12 +311,12 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             return RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>.Success(resposta);
         }
 
-        public async Task<RespostaPadrao<ObterTotalDeGastos>> ObterTotalDeGastos(ObterGastosDiariosConsolidadosPorMesAnoRequisicao requisicao)
+        public async Task<RespostaPadrao<ObterTotalDeGastos>> ObterTotalDeGastos(GetByMothDayRequest requisicao)
         {
             var filtro = new ObterGastosDiariosRequisicao()
             {
-                Ano = requisicao.Ano,
-                Mes = requisicao.Mes,
+                Ano = requisicao.Year,
+                Mes = requisicao.Month,
             };
 
             var somaGastosDiarios = await controleDeGastosRepositorio.ObterSomaGastosDiarios(filtro);
