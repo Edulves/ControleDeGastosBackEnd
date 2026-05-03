@@ -105,9 +105,6 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
         {
             var consulta = await controleDeGastosRepositorio.ObterCategoriasDeLancamentos();
 
-            if (consulta.Count <= 0)
-                return ResultPattern<List<EntryCategories>>.Failure( "Nenhu registro de categoria de lançamento encontrado", StatusCodes.Status200OK, "Nenhum registro encontrado");
-
             return ResultPattern<List<EntryCategories>>.Success(consulta);
         }
         public async Task<ResultPattern<string>> CreateCategoriesAsync(List<CreateCategoryRequest> requisicao)
