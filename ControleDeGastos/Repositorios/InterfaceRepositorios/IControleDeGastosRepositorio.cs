@@ -9,22 +9,22 @@ namespace ControleDeGastos.Repositorios.InterfaceRepositorios
     public interface IControleDeGastosRepositorio
     {
         #region GastosDiarios
-        Task<(List<GastosDiarios> itens, int totalItens)> ObterGastosDiariosPaginado(ObterGastosDiariosRequisicao obterGastosDiarios);
-        Task<List<GastosDiarios>> ObterGastosDiariosLista(ObterGastosDiariosRequisicao requisicao);
+        Task<(List<GastosDiarios> itens, int totalItens)> ObterGastosDiariosPaginado(GetDailyExpensesRequest obterGastosDiarios);
+        Task<List<GastosDiarios>> ObterGastosDiariosLista(GetDailyExpensesRequest requisicao);
         Task<GastosDiarios?> ObterGastoDiarioPorId(int id);
-        Task<decimal> ObterSomaGastosDiarios(ObterGastosDiariosRequisicao requisicao);
+        Task<decimal> ObterSomaGastosDiarios(GetDailyExpensesRequest requisicao);
         #endregion
 
         #region CategoriasDeGastos
-        Task<List<CategoriasDeLancamentos>> ObterCategoriasDeLancamentos();
-        Task<CategoriasDeLancamentos?> ObterCategoriasDeLancamentosPorId(int id);
+        Task<List<EntryCategories>> ObterCategoriasDeLancamentos();
+        Task<EntryCategories?> ObterCategoriasDeLancamentosPorId(int id);
         #endregion
 
         #region GastosFixos
-        Task<(List<GastosFixos> itens, int totalItens)> ObterGastosFixos(ObterGastosFixosRequisicao requisicao);
-        Task<List<GastosFixos>> ObterGastosFixosLista(ObterGastosFixosRequisicao requisicao);
-        Task<GastosFixos?> ObterGastosFixosPorId(int id);
-        Task<decimal> ObterSomaGastosFixos(ObterGastosFixosRequisicao requisicao);
+        Task<(List<FixedExpenseResult> itens, int totalItens)> ObterGastosFixos(GetFixedExpensesRequest requisicao);
+        Task<List<FixedExpenseResult>> ObterGastosFixosLista(GetFixedExpensesRequest requisicao);
+        Task<FixedExpenseResult?> ObterGastosFixosPorId(int id);
+        Task<decimal> ObterSomaGastosFixos(GetFixedExpensesRequest requisicao);
         #endregion
     }
 }

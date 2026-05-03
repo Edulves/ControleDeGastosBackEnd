@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControleDeGastos.Modelos
 {
-    public class GastosFixos
+    public class FixedExpenseResult
     {
         [Key]
         [Column("idgastos_fixos")]

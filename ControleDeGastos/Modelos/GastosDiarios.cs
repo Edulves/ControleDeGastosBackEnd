@@ -21,6 +21,6 @@ namespace ControleDeGastos.Modelos
 
         // propriedades de navegacão
         [ForeignKey("CategoriaId")]
-        public CategoriasDeLancamentos categoria { get; set; }
+        public EntryCategories categoria { get; set; }
     }
 }

@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControleDeGastos.Modelos
 {
-    public class CategoriasDeLancamentos
+    public class EntryCategories
     {
         [Key]
         [Column("id_categoria_de_lancamentos")]

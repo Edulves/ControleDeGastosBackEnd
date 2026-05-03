@@ -12,7 +12,7 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
     public class ControleDeGastosRepositorio(AppDbContext context) : IControleDeGastosRepositorio
     {
         #region GastosDiarios
-        public IQueryable<GastosDiarios> ObterGastosDiariosBase(ObterGastosDiariosRequisicao requisicao)
+        public IQueryable<GastosDiarios> ObterGastosDiariosBase(GetDailyExpensesRequest requisicao)
         {
             return context.gastos_diarios
             .FiltrarPorCategorias(requisicao.Categoria)
@@ -24,15 +24,15 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
             .OrderBy(x => x.DataDoLancamento)
             .ThenBy(x => x.IdGastosDiarios);
         }
-        public async Task<decimal> ObterSomaGastosDiarios(ObterGastosDiariosRequisicao requisicao)
+        public async Task<decimal> ObterSomaGastosDiarios(GetDailyExpensesRequest requisicao)
         {
             return await ObterGastosDiariosBase(requisicao).SumAsync(x => x.Valorgasto);
         }
-        public async Task<List<GastosDiarios>> ObterGastosDiariosLista(ObterGastosDiariosRequisicao requisicao)
+        public async Task<List<GastosDiarios>> ObterGastosDiariosLista(GetDailyExpensesRequest requisicao)
         {
             return await ObterGastosDiariosBase(requisicao).ToListAsync();
         }
-        public async Task<(List<GastosDiarios> itens, int totalItens)> ObterGastosDiariosPaginado(ObterGastosDiariosRequisicao requisicao)
+        public async Task<(List<GastosDiarios> itens, int totalItens)> ObterGastosDiariosPaginado(GetDailyExpensesRequest requisicao)
         {
             return await ObterGastosDiariosBase(requisicao).PaginarAsync(requisicao.Pagina, requisicao.QtdPorPagina);
         }
@@ -43,22 +43,22 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
         #endregion
 
         #region CategoriasDeGastos
-        public IQueryable<CategoriasDeLancamentos> ObterCategoriasDeLancamentosBase()
+        public IQueryable<EntryCategories> ObterCategoriasDeLancamentosBase()
         {
             return context.categorias_de_lancamentos.FiltrarRemoverDeletados();
         }
-        public async Task<List<CategoriasDeLancamentos>> ObterCategoriasDeLancamentos()
+        public async Task<List<EntryCategories>> ObterCategoriasDeLancamentos()
         {
             return await ObterCategoriasDeLancamentosBase().OrderBy(x => x.NomeDaCategoria).ToListAsync();
         }
-        public async Task<CategoriasDeLancamentos?> ObterCategoriasDeLancamentosPorId(int id)
+        public async Task<EntryCategories?> ObterCategoriasDeLancamentosPorId(int id)
         {
             return await context.categorias_de_lancamentos.FindAsync(id);
         }
         #endregion
 
         #region GastosFixos
-        public IQueryable<GastosFixos> ObterGastosFixosBase(ObterGastosFixosRequisicao requisicao)
+        public IQueryable<FixedExpenseResult> ObterGastosFixosBase(GetFixedExpensesRequest requisicao)
         {
             return context.gastos_fixos
             .FiltrarRemoverDeletados()
@@ -68,19 +68,19 @@ namespace ControleDeGastos.Repositorios.ImplementacaoRepositorios
             .OrderBy(x => x.DataDoLancamento)
             .ThenBy(x => x.IdGastosFixos);
         }
-        public async Task<List<GastosFixos>> ObterGastosFixosLista(ObterGastosFixosRequisicao requisicao)
+        public async Task<List<FixedExpenseResult>> ObterGastosFixosLista(GetFixedExpensesRequest requisicao)
         {
             return await ObterGastosFixosBase(requisicao).ToListAsync();
         }
-        public async Task<decimal> ObterSomaGastosFixos(ObterGastosFixosRequisicao requisicao)
+        public async Task<decimal> ObterSomaGastosFixos(GetFixedExpensesRequest requisicao)
         {
             return await  ObterGastosFixosBase(requisicao).SumAsync(x => x.ValorGastoFixo);
         }
-        public async Task<(List<GastosFixos> itens, int totalItens)> ObterGastosFixos(ObterGastosFixosRequisicao requisicao)
+        public async Task<(List<FixedExpenseResult> itens, int totalItens)> ObterGastosFixos(GetFixedExpensesRequest requisicao)
         {
             return await ObterGastosFixosBase(requisicao).PaginarAsync(requisicao.Pagina, requisicao.QtdPorPagina);
         }
-        public async Task<GastosFixos?> ObterGastosFixosPorId(int id)
+        public async Task<FixedExpenseResult?> ObterGastosFixosPorId(int id)
         {
             return await context.gastos_fixos.FindAsync(id);
         }

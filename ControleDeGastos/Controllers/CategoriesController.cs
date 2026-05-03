@@ -1,5 +1,5 @@
 using ControleDeGastos.Data.PadraoDeResposta.Extensao;
-using ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes;
+using ControleDeGastos.DTOs.Requisicoes.CategoriasRequisicoes;
 using ControleDeGastos.Modelos;
 using ControleDeGastos.Servico.InterfaceServicos;
 using Microsoft.AspNetCore.Mvc;
@@ -8,44 +8,44 @@ namespace ControleDeGastos.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class FixedExpensesController(IExpensesControlService expensesControlService) : ControllerBase
+    public class CategoriesController(IExpensesControlService expensesControlService) : ControllerBase
     {
         private readonly IExpensesControlService _expensesControlService = expensesControlService;
-
+    
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<FixedExpenseResult>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EntryCategories>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
-        public async Task<IActionResult> Get([FromQuery] GetFixedExpensesRequest request)
+        public async Task<IActionResult> Get()
         {
-            return (await _expensesControlService.GetFixedExpensesAsync(request)).ToIActionResult(this);
+            return (await _expensesControlService.GetEntryCategoriesAsync()).ToIActionResult(this);
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(List<FixedExpenseResult>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EntryCategories>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
-        public async Task<IActionResult> Post([FromBody] List<PostFixedExpensesDto> request)
+        public async Task<IActionResult> Post([FromBody] List<CreateCategoryRequest> request)
         {
-            return (await _expensesControlService.PostFixedExpenseAsync(request)).ToIActionResult(this);
+            return (await _expensesControlService.CreateCategoriesAsync(request)).ToIActionResult(this);
         }
 
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EntryCategories>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
-        public async Task<IActionResult> Put([FromBody] List<PutFixedExpensesRequest> request)
+        public async Task<IActionResult> Put([FromBody] List<EntryCategories> request)
         {
-            return (await _expensesControlService.PutFixedExpensesAsync(request)).ToIActionResult(this);
+            return (await _expensesControlService.PutCategoriesAsync(request)).ToIActionResult(this);
         }
 
         [HttpDelete("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<EntryCategories>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            return (await _expensesControlService.DeleteFixedExpensesAsync(id)).ToIActionResult(this);
+            return (await _expensesControlService.DeleteCategoryByIdAsync(id)).ToIActionResult(this);
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes
 {
-    public class ObterGastosFixosRequisicao : RequisicaoPaginada
+    public class GetFixedExpensesRequest : RequisicaoPaginada
     {
         public DateTime InicioDoPeriodo { get; set; }
         public DateTime FimDoPeriodo { get; set; }

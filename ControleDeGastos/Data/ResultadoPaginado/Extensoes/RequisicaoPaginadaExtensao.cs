@@ -17,9 +17,9 @@ public static class RequisicaoPaginadaExtensao
         return (items, totalCount);
     }
 
-    public static ResultadoPaginado<T> ToPagedResult<T>(this (List<T> Items, int TotalCount) source, int pagina, int itensPorPagina)
+    public static PagedResult<T> ToPagedResult<T>(this (List<T> Items, int TotalCount) source, int pagina, int itensPorPagina)
     {
-        return new ResultadoPaginado<T>(itens: source.Items,
+        return new PagedResult<T>(itens: source.Items,
                                   paginaAtual: pagina,
                                   itensPorPagina: itensPorPagina,
                                   totalItens: source.TotalCount);
@@ -28,7 +28,7 @@ public static class RequisicaoPaginadaExtensao
     /// <summary>
     /// Converte o tuple em PagedResult<T> usando um PagedRequest (avoida repetir página e qtde, passando apenas o DTO inteiro).
     /// </summary>
-    public static ResultadoPaginado<T> ToPagedResult<T>(this (List<T> Items, int TotalCount) source, RequisicaoPaginada filtro)
+    public static PagedResult<T> ToPagedResult<T>(this (List<T> Items, int TotalCount) source, RequisicaoPaginada filtro)
     {
         return source.ToPagedResult(pagina: filtro.Pagina, itensPorPagina: filtro.QtdPorPagina);
     }

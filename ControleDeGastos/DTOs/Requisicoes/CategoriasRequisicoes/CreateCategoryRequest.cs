@@ -2,7 +2,7 @@
 
 namespace ControleDeGastos.DTOs.Requisicoes.CategoriasRequisicoes
 {
-    public class CriarCategoriaRequisicao
+    public class CreateCategoryRequest
     {
         [Required]
         [MinLength(3)]

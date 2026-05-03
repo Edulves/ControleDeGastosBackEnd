@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ControleDeGastos.DTOs.Requisicao.GastosDiarios
 {
-    public class ObterGastosDiariosRequisicao : RequisicaoPaginada
+    public class GetDailyExpensesRequest : RequisicaoPaginada
     {
         public int Mes { get; set; }
         public int Ano { get; set; }

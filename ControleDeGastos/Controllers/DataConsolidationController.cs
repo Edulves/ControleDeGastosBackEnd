@@ -1,5 +1,4 @@
 using ControleDeGastos.Data.PadraoDeResposta.Extensao;
-using ControleDeGastos.DTOs.Erros;
 using ControleDeGastos.DTOs.Requisicoes.ConsolidadoRequisicoes;
 using ControleDeGastos.DTOs.Respostas.ConsolidadoRespostas;
 using ControleDeGastos.Servico.InterfaceServicos;
@@ -9,102 +8,44 @@ namespace ControleDeGastos.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class DataConsolidationController(IControleDeGastosServico controleDeGastosServico) : ControllerBase
+    public class DataConsolidationController(IExpensesControlService expensesControlService) : ControllerBase
     {
-        [HttpGet("GetExpensesPerCategory")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
-        public async Task<IActionResult> GetExpensesPerCategory([FromQuery] GetByFullDateMothDayRequest requisicao)
-        {
-            try
-            {
-                return (await controleDeGastosServico.ObterSomaDeGastoPorCategoria(requisicao)).ToIActionResult(this);
-            }
-            catch (Exception ex)
-            {
-                var problem = new DetalhesDeProblemas
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Titulo = "Erro interno no servidor",
-                    Detalhe = ex.Message,
-                    Instancia = HttpContext.Request.Path
-                };
+        private readonly IExpensesControlService _expensesControlService = expensesControlService;
 
-                return StatusCode(StatusCodes.Status500InternalServerError, problem);
-            }
+        [HttpGet("ExpensesPerCategory")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DailyExpensesPerCategoryResult>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> Get([FromQuery] GetByFullDateMothDayRequest request)
+        {
+            return (await _expensesControlService.GetExpensesSumPerCategoryAsync(request)).ToIActionResult(this);
         }
 
-        [HttpGet("GetExpensesPerDay")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
-        public async Task<IActionResult> GetExpensesPerDay([FromQuery] GetByMothDayRequest requisicao)
+        [HttpGet("ExpensesPerDay")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DailyExpensesConsolidationResult>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> GetExpensesPerDay([FromQuery] ExpensesByMothDayRequest request)
         {
-            try
-            {
-                return (await controleDeGastosServico.ObterSomaDeGastoPorDia(requisicao)).ToIActionResult(this);
-            }
-            catch (Exception ex)
-            {
-                var problem = new DetalhesDeProblemas
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Titulo = "Erro interno no servidor",
-                    Detalhe = ex.Message,
-                    Instancia = HttpContext.Request.Path
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, problem);
-            }
+            return (await _expensesControlService.GetExpensesSumPerDayAsync(request)).ToIActionResult(this);
         }
 
-        [HttpGet("GetFixedExpenses")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ObterGastosDiariosConsolidadosPagoVsNaoResposta>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
-        public async Task<IActionResult> GetFixedExpenses([FromQuery] GetByMothDayRequest requisicao)
+        [HttpGet("FixedExpenses")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TotalFixedExpensesComparasionResult>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> GetFixedExpenses([FromQuery] ExpensesByMothDayRequest request)
         {
-            try
-            {
-                return (await controleDeGastosServico.ObterValorGastosFixosTotaisPagoVsNao(requisicao)).ToIActionResult(this);
-            }
-            catch (Exception ex)
-            {
-                var problem = new DetalhesDeProblemas
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Titulo = "Erro interno no servidor",
-                    Detalhe = ex.Message,
-                    Instancia = HttpContext.Request.Path
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, problem);
-            }
+            return (await _expensesControlService.GetTotalFixedExpensesComparasionAsync(request)).ToIActionResult(this);
         }
 
-        [HttpGet("GetTotalDailyExpenses")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<ObterTotalDeGastos>))]
-        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(DetalhesDeProblemas))]
-        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(DetalhesDeProblemas))]
-        public async Task<IActionResult> GetTotalDailyExpenses([FromQuery] GetByMothDayRequest requisicao)
+        [HttpGet("TotalDailyExpenses")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TotalExpenses>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> GetTotalDailyExpenses([FromQuery] ExpensesByMothDayRequest request)
         {
-            try
-            {
-                return (await controleDeGastosServico.ObterTotalDeGastos(requisicao)).ToIActionResult(this);
-            }
-            catch (Exception ex)
-            {
-                var problem = new DetalhesDeProblemas
-                {
-                    Status = StatusCodes.Status500InternalServerError,
-                    Titulo = "Erro interno no servidor",
-                    Detalhe = ex.Message,
-                    Instancia = HttpContext.Request.Path
-                };
-
-                return StatusCode(StatusCodes.Status500InternalServerError, problem);
-            }
+            return (await _expensesControlService.GetTotalDailyExpensesAsync(request)).ToIActionResult(this);
         }
     }
 }

@@ -3,7 +3,7 @@
     /// <summary>
     /// Representa um resultado paginado de uma consulta, com itens e informações de paginação.
     /// </summary>
-    public class ResultadoPaginado<T>
+    public class PagedResult<T>
     {
         /// <summary>
         /// Itens retornados na página atual.
@@ -30,7 +30,7 @@
         /// </summary>
         public int TotalDePaginas { get; }
 
-        public ResultadoPaginado(List<T> itens, int paginaAtual, int itensPorPagina, int totalItens)
+        public PagedResult(List<T> itens, int paginaAtual, int itensPorPagina, int totalItens)
         {
             Itens = itens ?? throw new ArgumentNullException(nameof(itens));
             if (paginaAtual < 1)

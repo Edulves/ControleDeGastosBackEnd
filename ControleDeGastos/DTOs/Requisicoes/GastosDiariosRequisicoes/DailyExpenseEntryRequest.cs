@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControleDeGastos.DTOs.Requisicao.GastosDiarios
 {
-    public class CriarLancamentoDeGastoDiarioRequisicao
+    public class DailyExpenseEntryRequest
     {
         [Required]
         public DateTime DataDoLancamento { get; set; }

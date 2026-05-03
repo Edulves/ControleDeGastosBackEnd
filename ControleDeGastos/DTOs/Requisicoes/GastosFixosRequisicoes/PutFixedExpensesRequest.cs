@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes
 {
-    public class AtualizarGastosFixosRequisicao
+    public class PutFixedExpensesRequest
     {
         [Required]
         public int IdGastosFixos { get; set; }

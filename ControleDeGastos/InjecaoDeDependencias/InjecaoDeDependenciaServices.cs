@@ -7,7 +7,7 @@ namespace ControleDeGastos.InjecaoDeDependencias
     {
         public static void AdicionarInjecaoDeServicos(this IServiceCollection services)
         {
-            services.AddScoped<IControleDeGastosServico, ControleDeGastosServico>();
+            services.AddScoped<IExpensesControlService, ControleDeGastosServico>();
         }
     }
 }

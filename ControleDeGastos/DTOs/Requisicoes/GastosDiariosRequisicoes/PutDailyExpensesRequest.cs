@@ -2,7 +2,7 @@
 
 namespace ControleDeGastos.DTOs.Requisicao.GastosDiarios
 {
-    public class AtualizarGastosDiariosRequisicao
+    public class PutDailyExpensesRequest
     {   
         [Required]
         [Range(1, int.MaxValue, ErrorMessage = "IdGastos tem que ser maior que 0")]

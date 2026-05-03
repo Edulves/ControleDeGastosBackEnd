@@ -1,6 +1,6 @@
 ﻿namespace ControleDeGastos.DTOs.Respostas.ConsolidadoRespostas
 {
-    public class ObterTotalDeGastos
+    public class TotalExpenses
     {
         public decimal TotalGastos { get; set; }
     }

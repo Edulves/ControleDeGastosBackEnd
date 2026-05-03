@@ -10,17 +10,16 @@ using ControleDeGastos.DTOs.Respostas.ConsolidadoRespostas;
 using ControleDeGastos.Modelos;
 using ControleDeGastos.Repositorios.InterfaceRepositorios;
 using ControleDeGastos.Servico.InterfaceServicos;
-using System.Linq;
 
 namespace ControleDeGastos.Servico.ImplementacaoServicos
 {
-    public class ControleDeGastosServico(IControleDeGastosRepositorio controleDeGastosRepositorio, IOperacoesGenericas operacoesGenericas) : IControleDeGastosServico
+    public class ControleDeGastosServico(IControleDeGastosRepositorio controleDeGastosRepositorio, IOperacoesGenericas operacoesGenericas) : IExpensesControlService
     {
         #region GastosDiarios
-        public async Task<RespostaPadrao<string>> CriarLancamentosDeGastosDiarios(List<CriarLancamentoDeGastoDiarioRequisicao> requisicao)
+        public async Task<ResultPattern<string>> CreateDailyExpensesEntriesAsync(List<DailyExpenseEntryRequest> requisicao)
         {
             if (requisicao.Count <= 0)
-                return RespostaPadrao<string>.Failure("Nenhuma dado foi enviado para cadastro!");
+                return ResultPattern<string>.Failure("Nenhuma dado foi enviado para cadastro!");
 
             var modeloBanco = requisicao.Select(x => new GastosDiarios
             {
@@ -33,22 +32,22 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
             await operacoesGenericas.CriarAsync(modeloBanco);
 
-            return RespostaPadrao<string>.Success("Gasto cadrastrado com sucesso!");
+            return ResultPattern<string>.Success("Gasto cadrastrado com sucesso!");
         }
-        public async Task<RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>> ObterGastosDiarios(ObterGastosDiariosRequisicao requisicao)
+        public async Task<ResultPattern<PagedResult<DailyExpensesResult>>> GetDailyExpensesAsync(GetDailyExpensesRequest requisicao)
         {
             if(requisicao.InicioDoPeriodo > requisicao.FimDoPeriodo)
-                return RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>.Failure("Periodo de inicio não pode ser maior que o periodo de fim");
+                return ResultPattern<PagedResult<DailyExpensesResult>>.Failure("Periodo de inicio não pode ser maior que o periodo de fim");
 
             if (requisicao.Pagina < 1)
-                return RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>.Failure("Pagina indicada não existe");
+                return ResultPattern<PagedResult<DailyExpensesResult>>.Failure("Pagina indicada não existe");
 
             var consulta = await controleDeGastosRepositorio.ObterGastosDiariosPaginado(requisicao);
 
             if (consulta.itens.Count <= 0)
-                return RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>.Failure("Nenhu registro de gastos encontrado");
+                return ResultPattern<PagedResult<DailyExpensesResult>>.Failure("Nenhu registro de gastos encontrado");
 
-            var resposta = consulta.itens.Select(x => new ObterGastosDiariosResposta
+            var resposta = consulta.itens.Select(x => new DailyExpensesResult
             {
                 IdGastosDiario = x.IdGastosDiarios,
                 DataDoLancamento = x.DataDoLancamento,
@@ -59,12 +58,12 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
             var respostaPaginada = (resposta, consulta.totalItens).ToPagedResult(requisicao.Pagina, requisicao.QtdPorPagina);
 
-            return RespostaPadrao<ResultadoPaginado<ObterGastosDiariosResposta>>.Success(respostaPaginada);
+            return ResultPattern<PagedResult<DailyExpensesResult>>.Success(respostaPaginada);
         }
-        public async Task<RespostaPadrao<string>> AtualizarLancamentosDeGastosDiarios(List<AtualizarGastosDiariosRequisicao> requisicao)
+        public async Task<ResultPattern<string>> UpdateDailyExpensesEntriesAsync(List<PutDailyExpensesRequest> requisicao)
         {
             if (requisicao.Count <= 0)
-                return RespostaPadrao<string>.Failure($"Nenhum item para atualizar");
+                return ResultPattern<string>.Failure($"Nenhum item para atualizar");
 
             var modeloBanco = new List<GastosDiarios>();
 
@@ -72,7 +71,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             {
                 var consulta = await controleDeGastosRepositorio.ObterGastoDiarioPorId(item.IdGastosDiario);
                 if (consulta == null)
-                    return RespostaPadrao<string>.Failure($"Nenhum gasto diario de id: {item.IdGastosDiario} encontrado");
+                    return ResultPattern<string>.Failure($"Nenhum gasto diario de id: {item.IdGastosDiario} encontrado");
 
                 consulta.DataDoLancamento = item.DataDoLancamento == DateTime.MinValue ? consulta.DataDoLancamento : item.DataDoLancamento;
                 consulta.Valorgasto = item.Valorgasto <= 0 ? consulta.Valorgasto : item.Valorgasto;
@@ -84,45 +83,45 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
             await operacoesGenericas.AtualizarAsync(modeloBanco);
 
-            return RespostaPadrao<string>.Success("Itens atualizados com sucesso!");
+            return ResultPattern<string>.Success("Itens atualizados com sucesso!");
         }
-        public async Task<RespostaPadrao<string>> FalsoDeleteLancamentosDeGastosDiarios(int id)
+        public async Task<ResultPattern<string>> DeleteDailyExpenseEntryByIdAsync(int id)
         {
             var lancamentoParaFakeDelete = await controleDeGastosRepositorio.ObterGastoDiarioPorId(id);
 
             if(lancamentoParaFakeDelete == null)
-                return RespostaPadrao<string>.Failure($"Não existe registro de id: {id}");
+                return ResultPattern<string>.Failure($"Não existe registro de id: {id}");
 
             lancamentoParaFakeDelete.Deletado = "*";
 
             await operacoesGenericas.AtualizarAsync(lancamentoParaFakeDelete);
 
-            return RespostaPadrao<string>.Success("Item 'deletado' com sucesso!");
+            return ResultPattern<string>.Success("Item 'deletado' com sucesso!");
         }
         #endregion
 
         #region CategoriasDeGastos
-        public async Task<RespostaPadrao<List<CategoriasDeLancamentos>>> ObterCategoriasDeLancamentos()
+        public async Task<ResultPattern<List<EntryCategories>>> GetEntryCategoriesAsync()
         {
             var consulta = await controleDeGastosRepositorio.ObterCategoriasDeLancamentos();
 
             if (consulta.Count <= 0)
-                return RespostaPadrao<List<CategoriasDeLancamentos>>.Failure("Nenhu registro de categoria de lançamento encontrado");
+                return ResultPattern<List<EntryCategories>>.Failure( "Nenhu registro de categoria de lançamento encontrado", StatusCodes.Status200OK, "Nenhum registro encontrado");
 
-            return RespostaPadrao<List<CategoriasDeLancamentos>>.Success(consulta);
+            return ResultPattern<List<EntryCategories>>.Success(consulta);
         }
-        public async Task<RespostaPadrao<string>> CriarCategorias(List<CriarCategoriaRequisicao> requisicao)
+        public async Task<ResultPattern<string>> CreateCategoriesAsync(List<CreateCategoryRequest> requisicao)
         {
-            var novaCategoria = requisicao.Select(x => new CategoriasDeLancamentos()
+            var novaCategoria = requisicao.Select(x => new EntryCategories()
             {
                 NomeDaCategoria = x.NomeCategoria.ToLower(),
             }).ToList();
 
             await operacoesGenericas.CriarAsync(novaCategoria);
 
-            return RespostaPadrao<string>.Success($"Categorias criadas com sucesso!");
+            return ResultPattern<string>.Success($"Categorias criadas com sucesso!");
         }
-        public async Task<RespostaPadrao<string>> AtualizarCategorias(List<CategoriasDeLancamentos> requisicao)
+        public async Task<ResultPattern<string>> PutCategoriesAsync(List<EntryCategories> requisicao)
         {
             foreach (var item in requisicao)
             {
@@ -131,42 +130,42 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             
             await operacoesGenericas.AtualizarAsync(requisicao);
 
-            return RespostaPadrao<string>.Success($"Categorias atualizadas com sucesso!");
+            return ResultPattern<string>.Success($"Categorias atualizadas com sucesso!");
         }
-        public async Task<RespostaPadrao<string>> FalsoDeleteCategoria(int id)
+        public async Task<ResultPattern<string>> DeleteCategoryByIdAsync(int id)
         {
             var consulta = await controleDeGastosRepositorio.ObterCategoriasDeLancamentosPorId(id);
 
             if (consulta == null)
-                return RespostaPadrao<string>.Failure($"Nenhuma categoria encontrada com id: {id}");
+                return ResultPattern<string>.Failure($"Nenhuma categoria encontrada com id: {id}");
 
             consulta.Deletado = "*";
 
             await operacoesGenericas.AtualizarAsync(consulta);
 
-            return RespostaPadrao<string>.Success($"Categoria deletada com sucesso!");
+            return ResultPattern<string>.Success($"Categoria deletada com sucesso!");
         }
         #endregion
 
         #region GastosFixos
-        public async Task<RespostaPadrao<ResultadoPaginado<GastosFixos>>> ObterGastosFixos(ObterGastosFixosRequisicao requisicao)
+        public async Task<ResultPattern<PagedResult<FixedExpenseResult>>> GetFixedExpensesAsync(GetFixedExpensesRequest requisicao)
         {
             if (requisicao.InicioDoPeriodo > requisicao.FimDoPeriodo)
-                return RespostaPadrao<ResultadoPaginado<GastosFixos>>.Failure("Periodo de inicio não pode ser maior que o periodo de fim");
+                return ResultPattern<PagedResult<FixedExpenseResult>>.Failure("Periodo de inicio não pode ser maior que o periodo de fim");
 
             if (requisicao.Pagina < 1)
-                return RespostaPadrao<ResultadoPaginado<GastosFixos>>.Failure("Pagina indicada não existe");
+                return ResultPattern<PagedResult<FixedExpenseResult>>.Failure("Pagina indicada não existe");
 
             var consulta = await controleDeGastosRepositorio.ObterGastosFixos(requisicao);
 
             var respostaPaginada = (consulta.itens, consulta.totalItens).ToPagedResult(requisicao.Pagina, requisicao.QtdPorPagina);
 
-            return RespostaPadrao<ResultadoPaginado<GastosFixos>>.Success(respostaPaginada);
+            return ResultPattern<PagedResult<FixedExpenseResult>>.Success(respostaPaginada);
         }
-        public async Task<RespostaPadrao<string>> CriarGastosFixos(List<CriarGastosFixosRequisicao> requisicao)
+        public async Task<ResultPattern<string>> PostFixedExpenseAsync(List<PostFixedExpensesDto> requisicao)
         {
 
-            var mapeamentoModelo = requisicao.Select(x => new GastosFixos
+            var mapeamentoModelo = requisicao.Select(x => new FixedExpenseResult
             {
                 DescricaoGastoFixo = x.DescricaoGastoFixo,
                 ValorGastoFixo = x.ValorGastoFixo,
@@ -176,25 +175,25 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             foreach (var item in mapeamentoModelo)
             {
                 if (item.DataDoLancamento == DateTime.MinValue)
-                    return RespostaPadrao<string>.Failure("Data inválida");
+                    return ResultPattern<string>.Failure($"Invalid date {item.DataDoLancamento}", "Invalid date");
             }
 
             await operacoesGenericas.CriarAsync(mapeamentoModelo);
 
-            return RespostaPadrao<string>.Success("Gastos fixo criados com sucesso!");
+            return ResultPattern<string>.Success("Gastos fixo criados com sucesso!", StatusCodes.Status201Created);
         }
-        public async Task<RespostaPadrao<string>> AtualizarGastosFixos(List<AtualizarGastosFixosRequisicao> requisicao)
+        public async Task<ResultPattern<string>> PutFixedExpensesAsync(List<PutFixedExpensesRequest> requisicao)
         {
             if(requisicao.Count <= 0)
-                return RespostaPadrao<string>.Failure($"Nenhum item para atualizar");
+                return ResultPattern<string>.Failure($"Nenhum item para atualizar");
 
-            var modeloBanco = new List<GastosFixos>();
+            var modeloBanco = new List<FixedExpenseResult>();
 
             foreach (var item in requisicao)
             {
                 var consulta = await controleDeGastosRepositorio.ObterGastosFixosPorId(item.IdGastosFixos);
                 if (consulta == null){
-                    modeloBanco.Add(new GastosFixos()
+                    modeloBanco.Add(new FixedExpenseResult()
                     {
                         DescricaoGastoFixo = item.DescricaoGastoFixo,
                         ValorGastoFixo = item.ValorGastoFixo,
@@ -214,27 +213,27 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
             await operacoesGenericas.AtualizarAsync(modeloBanco);
 
-            return RespostaPadrao<string>.Success("Gastos fixo atualizados com sucesso!");
+            return ResultPattern<string>.Success("Gastos fixo atualizados com sucesso!");
         }
-        public async Task<RespostaPadrao<string>> FalsoDeleteGastosFixo(int id)
+        public async Task<ResultPattern<string>> DeleteFixedExpensesAsync(int id)
         {
             var lancamentoParaFakeDelete = await controleDeGastosRepositorio.ObterGastosFixosPorId(id);
 
             if (lancamentoParaFakeDelete == null)
-                return RespostaPadrao<string>.Failure($"Não existe registro de id: {id}");
+                return ResultPattern<string>.Failure($"Não existe registro de id: {id}");
 
             lancamentoParaFakeDelete.Deletado = "*";
 
             await operacoesGenericas.AtualizarAsync(lancamentoParaFakeDelete);
 
-            return RespostaPadrao<string>.Success("Item 'deletado' com sucesso!");
+            return ResultPattern<string>.Success("Item 'deletado' com sucesso!");
         }
         #endregion
 
         #region Consolidado
-        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>> ObterSomaDeGastoPorCategoria(GetByFullDateMothDayRequest requisicao)
+        public async Task<ResultPattern<DailyExpensesPerCategoryResult>> GetExpensesSumPerCategoryAsync(GetByFullDateMothDayRequest requisicao)
         {
-            var filtro = new ObterGastosDiariosRequisicao()
+            var filtro = new GetDailyExpensesRequest()
             {
                 InicioDoPeriodo = requisicao.BeginningOfPeriod,
                 FimDoPeriodo = requisicao.EndOfPeriod,
@@ -245,7 +244,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
             
             if(consultaGastosDiarios.Count <= 0)
-                return RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>.Failure("Nenhum gasto encontrado para os filtros ultilizados");
+                return ResultPattern<DailyExpensesPerCategoryResult>.Failure("Nenhum gasto encontrado para os filtros ultilizados");
 
             var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.CategoriaId);
 
@@ -255,16 +254,16 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
                 ValorGasto = x.Sum(x => x.Valorgasto),
             }).OrderByDescending(x => x.ValorGasto).ToList();
 
-            var resposta = new ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta();
+            var resposta = new DailyExpensesPerCategoryResult();
             resposta.ListaDeGastosPorCategoria.AddRange(GastosPorCategoria);
             resposta.TotalDeGastos = resposta.ListaDeGastosPorCategoria.Sum(x => x.ValorGasto);
 
-            return RespostaPadrao<ObterGastosDiariosConsolidadosPorCategoriaComTotaisResposta>.Success(resposta);
+            return ResultPattern<DailyExpensesPerCategoryResult>.Success(resposta);
         }
 
-        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>> ObterSomaDeGastoPorDia(GetByMothDayRequest requisicao)
+        public async Task<ResultPattern<DailyExpensesConsolidationResult>> GetExpensesSumPerDayAsync(ExpensesByMothDayRequest requisicao)
         {
-            var filtro = new ObterGastosDiariosRequisicao() {
+            var filtro = new GetDailyExpensesRequest() {
                 Ano = requisicao.Year,
                 Mes = requisicao.Month
             };
@@ -272,7 +271,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
 
             if (consultaGastosDiarios.Count <= 0)
-                return RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>.Failure("Nenhum gasto diario encontrado");
+                return ResultPattern<DailyExpensesConsolidationResult>.Failure("Nenhum gasto diario encontrado");
 
             var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.DataDoLancamento.Date);
            
@@ -282,16 +281,16 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
                 ValorPorDia = x.Sum(x => x.Valorgasto)
             }).OrderBy(x => x.DataLancamento).ToList();
 
-            var resposta = new ObterGastosDiariosConsolidadosPorDiaComTotaisResposta();
+            var resposta = new DailyExpensesConsolidationResult();
             resposta.ListaDeGastosPorDia.AddRange(GastosPorCategoria);
             resposta.Total = resposta.ListaDeGastosPorDia.Sum(x => x.ValorPorDia);
 
-            return RespostaPadrao<ObterGastosDiariosConsolidadosPorDiaComTotaisResposta>.Success(resposta);
+            return ResultPattern<DailyExpensesConsolidationResult>.Success(resposta);
         }
 
-        public async Task<RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>> ObterValorGastosFixosTotaisPagoVsNao(GetByMothDayRequest requisicao)
+        public async Task<ResultPattern<TotalFixedExpensesComparasionResult>> GetTotalFixedExpensesComparasionAsync(ExpensesByMothDayRequest requisicao)
         {
-            var filtro = new ObterGastosFixosRequisicao()
+            var filtro = new GetFixedExpensesRequest()
             {
                 Ano = requisicao.Year,
                 Mes = requisicao.Month,
@@ -300,20 +299,20 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             var consultaGastosFixos = await controleDeGastosRepositorio.ObterGastosFixosLista(filtro);
 
             if (consultaGastosFixos.Count <= 0)
-                return RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>.Failure("NenhumGastoFixoEncontrado");
+                return ResultPattern<TotalFixedExpensesComparasionResult>.Failure("NenhumGastoFixoEncontrado");
 
-            var resposta = new ObterGastosDiariosConsolidadosPagoVsNaoResposta()
+            var resposta = new TotalFixedExpensesComparasionResult()
             {
                 ValorPago = consultaGastosFixos.Where(x => x.Pago).Sum(x => x.ValorGastoFixo),
                 ValorNaoPago = consultaGastosFixos.Where(x => !x.Pago).Sum(x => x.ValorGastoFixo),
             };
 
-            return RespostaPadrao<ObterGastosDiariosConsolidadosPagoVsNaoResposta>.Success(resposta);
+            return ResultPattern<TotalFixedExpensesComparasionResult>.Success(resposta);
         }
 
-        public async Task<RespostaPadrao<ObterTotalDeGastos>> ObterTotalDeGastos(GetByMothDayRequest requisicao)
+        public async Task<ResultPattern<TotalExpenses>> GetTotalDailyExpensesAsync(ExpensesByMothDayRequest requisicao)
         {
-            var filtro = new ObterGastosDiariosRequisicao()
+            var filtro = new GetDailyExpensesRequest()
             {
                 Ano = requisicao.Year,
                 Mes = requisicao.Month,
@@ -321,9 +320,9 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
 
             var somaGastosDiarios = await controleDeGastosRepositorio.ObterSomaGastosDiarios(filtro);
 
-            var resposta = new ObterTotalDeGastos() { TotalGastos = somaGastosDiarios };
+            var resposta = new TotalExpenses() { TotalGastos = somaGastosDiarios };
 
-            return RespostaPadrao<ObterTotalDeGastos>.Success(resposta);
+            return ResultPattern<TotalExpenses>.Success(resposta);
         }
         #endregion
     }

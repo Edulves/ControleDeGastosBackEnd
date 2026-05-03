@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes
 {
-    public class CriarGastosFixosRequisicao
+    public class PostFixedExpensesDto
     {
         [Required]
         [Length(3, 100, ErrorMessage = "Descrição do gastoFixo deve ter entre 3 e 100 caracteres")]
