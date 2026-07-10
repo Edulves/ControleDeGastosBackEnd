@@ -8,42 +8,42 @@
         /// <summary>
         /// Itens retornados na página atual.
         /// </summary>
-        public List<T> Itens { get; }
+        public List<T> Items { get; }
 
         /// <summary>
         /// Número da página atual (1-based).
         /// </summary>
-        public int PaginaAtual { get; }
+        public int CurrentPage { get; }
 
         /// <summary>
         /// Tamanho (quantidade) de itens por página.
         /// </summary>
-        public int ItensPorPagina { get; }
+        public int ItemsPerPage { get; }
 
         /// <summary>
         /// Total de itens na consulta completa.
         /// </summary>
-        public int TotalItens { get; }
+        public int TotalItems { get; }
 
         /// <summary>
         /// Total de páginas calculado a partir de TotalItems e PageSize.
         /// </summary>
-        public int TotalDePaginas { get; }
+        public int TotalPages { get; }
 
-        public PagedResult(List<T> itens, int paginaAtual, int itensPorPagina, int totalItens)
+        public PagedResult(List<T> items, int currentPage, int itemsPerPage, int totalItems)
         {
-            Itens = itens ?? throw new ArgumentNullException(nameof(itens));
-            if (paginaAtual < 1)
-                throw new ArgumentOutOfRangeException(nameof(paginaAtual));
-            if (itensPorPagina < 1)
-                throw new ArgumentOutOfRangeException(nameof(itensPorPagina));
-            if (totalItens < 0)
-                throw new ArgumentOutOfRangeException(nameof(totalItens));
+            Items = items ?? throw new ArgumentNullException(nameof(items));
+            if (currentPage < 1)
+                throw new ArgumentOutOfRangeException(nameof(currentPage));
+            if (itemsPerPage < 1)
+                throw new ArgumentOutOfRangeException(nameof(itemsPerPage));
+            if (totalItems < 0)
+                throw new ArgumentOutOfRangeException(nameof(totalItems));
 
-            PaginaAtual = paginaAtual;
-            ItensPorPagina = itensPorPagina;
-            TotalItens = totalItens;
-            TotalDePaginas = (int)Math.Ceiling(totalItens / (double)itensPorPagina);
+            CurrentPage = currentPage;
+            ItemsPerPage = itemsPerPage;
+            TotalItems = totalItems;
+            TotalPages = (int)Math.Ceiling(totalItems / (double)itemsPerPage);
         }
     }
 }

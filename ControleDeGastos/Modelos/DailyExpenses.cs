@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ControleDeGastos.Modelos
 {
-    public class GastosDiarios
+    public class DailyExpenses
     {
         [Key]
         [Column("id_gastos_diarios")]

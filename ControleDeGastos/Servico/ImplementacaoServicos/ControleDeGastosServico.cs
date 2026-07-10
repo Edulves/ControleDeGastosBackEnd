@@ -21,7 +21,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             if (requisicao.Count <= 0)
                 return ResultPattern<string>.Failure("Nenhuma dado foi enviado para cadastro!");
 
-            var modeloBanco = requisicao.Select(x => new GastosDiarios
+            var modeloBanco = requisicao.Select(x => new DailyExpenses
             {
                 DataDoLancamento = x.DataDoLancamento,
                 Valorgasto = x.Valorgasto,
@@ -39,7 +39,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             if(requisicao.InicioDoPeriodo > requisicao.FimDoPeriodo)
                 return ResultPattern<PagedResult<DailyExpensesResult>>.Failure("Periodo de inicio não pode ser maior que o periodo de fim");
 
-            if (requisicao.Pagina < 1)
+            if (requisicao.Page < 1)
                 return ResultPattern<PagedResult<DailyExpensesResult>>.Failure("Pagina indicada não existe");
 
             var consulta = await controleDeGastosRepositorio.ObterGastosDiariosPaginado(requisicao);
@@ -56,7 +56,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
                 NomeCategoria = x.categoria?.NomeDaCategoria ?? "",
             }).ToList();
 
-            var respostaPaginada = (resposta, consulta.totalItens).ToPagedResult(requisicao.Pagina, requisicao.QtdPorPagina);
+            var respostaPaginada = (resposta, consulta.totalItens).ToPagedResult(requisicao.Page, requisicao.QTY);
 
             return ResultPattern<PagedResult<DailyExpensesResult>>.Success(respostaPaginada);
         }
@@ -65,7 +65,7 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             if (requisicao.Count <= 0)
                 return ResultPattern<string>.Failure($"Nenhum item para atualizar");
 
-            var modeloBanco = new List<GastosDiarios>();
+            var modeloBanco = new List<DailyExpenses>();
 
             foreach (var item in requisicao)
             {
@@ -150,12 +150,12 @@ namespace ControleDeGastos.Servico.ImplementacaoServicos
             if (requisicao.InicioDoPeriodo > requisicao.FimDoPeriodo)
                 return ResultPattern<PagedResult<FixedExpenseResult>>.Failure("Periodo de inicio não pode ser maior que o periodo de fim");
 
-            if (requisicao.Pagina < 1)
+            if (requisicao.Page < 1)
                 return ResultPattern<PagedResult<FixedExpenseResult>>.Failure("Pagina indicada não existe");
 
             var consulta = await controleDeGastosRepositorio.ObterGastosFixos(requisicao);
 
-            var respostaPaginada = (consulta.itens, consulta.totalItens).ToPagedResult(requisicao.Pagina, requisicao.QtdPorPagina);
+            var respostaPaginada = (consulta.itens, consulta.totalItens).ToPagedResult(requisicao.Page, requisicao.QTY);
 
             return ResultPattern<PagedResult<FixedExpenseResult>>.Success(respostaPaginada);
         }

@@ -9,9 +9,9 @@ namespace ControleDeGastos.Repositorios.InterfaceRepositorios
     public interface IControleDeGastosRepositorio
     {
         #region GastosDiarios
-        Task<(List<GastosDiarios> itens, int totalItens)> ObterGastosDiariosPaginado(GetDailyExpensesRequest obterGastosDiarios);
-        Task<List<GastosDiarios>> ObterGastosDiariosLista(GetDailyExpensesRequest requisicao);
-        Task<GastosDiarios?> ObterGastoDiarioPorId(int id);
+        Task<(List<DailyExpenses> itens, int totalItens)> ObterGastosDiariosPaginado(GetDailyExpensesRequest obterGastosDiarios);
+        Task<List<DailyExpenses>> ObterGastosDiariosLista(GetDailyExpensesRequest requisicao);
+        Task<DailyExpenses?> ObterGastoDiarioPorId(int id);
         Task<decimal> ObterSomaGastosDiarios(GetDailyExpensesRequest requisicao);
         #endregion
 
