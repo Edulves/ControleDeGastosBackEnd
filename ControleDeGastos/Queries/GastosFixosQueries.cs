@@ -1,6 +1,6 @@
-﻿using ControleDeGastos.Modelos;
+﻿using ExpensesControl.Modelos;
 
-namespace ControleDeGastos.Queries
+namespace ExpensesControl.Queries
 {
     public static class GastosFixosQueries
     {

@@ -1,5 +1,6 @@
-using ControleDeGastos.Data.Contexto;
-using ControleDeGastos.InjecaoDeDependencias;
+using ControleDeGastos.DependecyInjection;
+using ExpensesControl.Data.Contexto;
+using ExpensesControl.DependecyInjection;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -10,8 +11,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
-builder.Services.AdicionarInjecaoDeServicos();
-builder.Services.AdicionarInjecaoDeRepositorios();
+builder.Services.AddServicesInjection();
+builder.Services.AddDependencyInjectionRepositories();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));

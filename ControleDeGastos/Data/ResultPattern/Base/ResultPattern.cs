@@ -1,4 +1,4 @@
-﻿namespace ControleDeGastos.Data.PadraoDeResposta.Base;
+﻿namespace ExpensesControl.Data.ResultPattern.Base;
 
 public class ResultPattern<T>
 {

@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ControleDeGastos.Modelos
+namespace ExpensesControl.Modelos
 {
     public class EntryCategories
     {

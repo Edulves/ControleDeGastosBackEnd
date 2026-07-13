@@ -1,20 +1,21 @@
-﻿using ControleDeGastos.Data.PadraoDeResposta.Base;
-using ControleDeGastos.Data.ResultadoPaginado;
-using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
-using ControleDeGastos.DTOs.Requisicoes.CategoriasRequisicoes;
-using ControleDeGastos.DTOs.Requisicoes.ConsolidadoRequisicoes;
-using ControleDeGastos.DTOs.Requisicoes.GastosFixosRequisicoes;
-using ControleDeGastos.DTOs.Resposta.GastosDiarios;
-using ControleDeGastos.DTOs.Respostas.ConsolidadoRespostas;
-using ControleDeGastos.Modelos;
+﻿using ExpensesControl.Data.PaginatedResult;
+using ExpensesControl.Data.ResultPattern.Base;
+using ExpensesControl.DTOs.Requests.CategoriesRequests;
+using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
+using ExpensesControl.DTOs.Requests.DataConsolidationRequests;
+using ExpensesControl.DTOs.Requests.FixedExpensesRequests;
+using ExpensesControl.DTOs.Requisicoes.GastosFixosRequisicoes;
+using ExpensesControl.DTOs.Responses.DailyExpensesReponses;
+using ExpensesControl.DTOs.Responses.DataConsolidationResponses;
+using ExpensesControl.Modelos;
 
-namespace ControleDeGastos.Servico.InterfaceServicos
+namespace ExpensesControl.Service.ServiceInterfaces
 {
     public interface IExpensesControlService
     {
         #region GastosDiarios
         Task<ResultPattern<string>> CreateDailyExpensesEntriesAsync(List<DailyExpenseEntryRequest> requisicao);
-        Task<ResultPattern<PagedResult<DailyExpensesResult>>> GetDailyExpensesAsync(GetDailyExpensesRequest requisicao);
+        Task<ResultPattern<PagedResult<DailyExpensesResponse>>> GetDailyExpensesAsync(GetDailyExpensesRequest requisicao);
         Task<ResultPattern<string>> UpdateDailyExpensesEntriesAsync(List<PutDailyExpensesRequest> requisicao);
         Task<ResultPattern<string>> DeleteDailyExpenseEntryByIdAsync(int id);
         #endregion
@@ -34,10 +35,10 @@ namespace ControleDeGastos.Servico.InterfaceServicos
         #endregion
 
         #region Consolidado
-        Task<ResultPattern<DailyExpensesPerCategoryResult>> GetExpensesSumPerCategoryAsync(GetByFullDateMothDayRequest requisicao);
-        Task<ResultPattern<DailyExpensesConsolidationResult>> GetExpensesSumPerDayAsync(ExpensesByMothDayRequest requisicao);
-        Task<ResultPattern<TotalFixedExpensesComparasionResult>> GetTotalFixedExpensesComparasionAsync(ExpensesByMothDayRequest requisicao);
-        Task<ResultPattern<TotalExpenses>> GetTotalDailyExpensesAsync(ExpensesByMothDayRequest requisicao);
+        Task<ResultPattern<DailyExpensesPerCategoryResult>> GetExpensesSumPerCategoryAsync(GetByFullDateOrMothAndYearRequest requisicao);
+        Task<ResultPattern<DailyExpensesConsolidationResult>> GetExpensesSumPerDayAsync(ExpensesByMothAndYearRequest requisicao);
+        Task<ResultPattern<TotalFixedExpensesComparasionResponse>> GetTotalFixedExpensesComparasionAsync(ExpensesByMothAndYearRequest requisicao);
+        Task<ResultPattern<TotalExpensesResponse>> GetTotalDailyExpensesAsync(ExpensesByMothAndYearRequest requisicao);
         #endregion
     }
 }

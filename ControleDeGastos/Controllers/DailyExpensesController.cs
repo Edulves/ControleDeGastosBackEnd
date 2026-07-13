@@ -1,11 +1,11 @@
-using ControleDeGastos.Data.PadraoDeResposta.Extensao;
-using ControleDeGastos.Data.ResultadoPaginado;
-using ControleDeGastos.DTOs.Requisicao.GastosDiarios;
-using ControleDeGastos.DTOs.Resposta.GastosDiarios;
-using ControleDeGastos.Servico.InterfaceServicos;
+using ExpensesControl.Data.PaginatedResult;
+using ExpensesControl.Data.ResultPattern.Extensions;
+using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
+using ExpensesControl.DTOs.Responses.DailyExpensesReponses;
+using ExpensesControl.Service.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ControleDeGastos.Controllers
+namespace ExpensesControl.Controllers
 {
     [Route("[controller]")]
     [ApiController]
@@ -14,7 +14,7 @@ namespace ControleDeGastos.Controllers
         private readonly IExpensesControlService _expensesControlService = expensesControlService;
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<DailyExpensesResult>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<DailyExpensesResponse>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> Get([FromQuery] GetDailyExpensesRequest request)

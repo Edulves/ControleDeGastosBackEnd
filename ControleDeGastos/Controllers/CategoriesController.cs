@@ -1,10 +1,10 @@
-using ControleDeGastos.Data.PadraoDeResposta.Extensao;
-using ControleDeGastos.DTOs.Requisicoes.CategoriasRequisicoes;
-using ControleDeGastos.Modelos;
-using ControleDeGastos.Servico.InterfaceServicos;
+using ExpensesControl.Data.ResultPattern.Extensions;
+using ExpensesControl.DTOs.Requests.CategoriesRequests;
+using ExpensesControl.Modelos;
+using ExpensesControl.Service.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace ControleDeGastos.Controllers
+namespace ExpensesControl.Controllers
 {
     [Route("[controller]")]
     [ApiController]

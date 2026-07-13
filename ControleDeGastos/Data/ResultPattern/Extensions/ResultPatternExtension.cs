@@ -1,10 +1,9 @@
-﻿using ControleDeGastos.Data.PadraoDeResposta.Base;
+﻿using ExpensesControl.Data.ResultPattern.Base;
 using Microsoft.AspNetCore.Mvc;
-namespace ControleDeGastos.Data.PadraoDeResposta.Extensao;
+namespace ExpensesControl.Data.ResultPattern.Extensions;
 
 public static class ResultPatternExtension
 {
-
     public static IActionResult ToIActionResult<T>(this ResultPattern<T> result, ControllerBase controller)
     {
         if (result.IsSuccess)
