@@ -1,7 +1,7 @@
 using ExpensesControl.Data.ResultPattern.Extensions;
 using ExpensesControl.DTOs.Requests.FixedExpensesRequests;
 using ExpensesControl.DTOs.Requisicoes.GastosFixosRequisicoes;
-using ExpensesControl.Modelos;
+using ExpensesControl.Models;
 using ExpensesControl.Service.ServiceInterfaces;
 using Microsoft.AspNetCore.Mvc;
 

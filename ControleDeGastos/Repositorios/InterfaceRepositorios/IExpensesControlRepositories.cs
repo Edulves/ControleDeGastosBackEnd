@@ -1,6 +1,6 @@
 ﻿using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
 using ExpensesControl.DTOs.Requests.FixedExpensesRequests;
-using ExpensesControl.Modelos;
+using ExpensesControl.Models;
 
 namespace ExpensesControl.Repositories.RepositoriesInterface
 {
@@ -14,8 +14,8 @@ namespace ExpensesControl.Repositories.RepositoriesInterface
         #endregion
 
         #region CategoriasDeGastos
-        Task<List<EntryCategories>> ObterCategoriasDeLancamentos();
-        Task<EntryCategories?> ObterCategoriasDeLancamentosPorId(int id);
+        Task<List<TransactionCategories>> ObterCategoriasDeLancamentos();
+        Task<TransactionCategories?> ObterCategoriasDeLancamentosPorId(int id);
         #endregion
 
         #region GastosFixos

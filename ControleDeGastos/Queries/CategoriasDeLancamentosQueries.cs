@@ -1,12 +1,12 @@
-﻿using ExpensesControl.Modelos;
+﻿using ExpensesControl.Models;
 
 namespace ExpensesControl.Queries
 {
     public static class CategoriasDeLancamentosQueries
     {
-        public static IQueryable<EntryCategories> FiltrarRemoverDeletados(this IQueryable<EntryCategories> query)
+        public static IQueryable<TransactionCategories> FiltrarRemoverDeletados(this IQueryable<TransactionCategories> query)
         {
-            return query.Where(x => x.Deletado != "*");
+            return query.Where(x => x.Deleted != "*");
         }
     }
 }

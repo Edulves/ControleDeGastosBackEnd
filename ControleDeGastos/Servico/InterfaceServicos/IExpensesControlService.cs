@@ -7,7 +7,7 @@ using ExpensesControl.DTOs.Requests.FixedExpensesRequests;
 using ExpensesControl.DTOs.Requisicoes.GastosFixosRequisicoes;
 using ExpensesControl.DTOs.Responses.DailyExpensesReponses;
 using ExpensesControl.DTOs.Responses.DataConsolidationResponses;
-using ExpensesControl.Modelos;
+using ExpensesControl.Models;
 
 namespace ExpensesControl.Service.ServiceInterfaces
 {
@@ -21,9 +21,9 @@ namespace ExpensesControl.Service.ServiceInterfaces
         #endregion
 
         #region CategoriasDeGastos
-        Task<ResultPattern<List<EntryCategories>>> GetEntryCategoriesAsync();
+        Task<ResultPattern<List<TransactionCategories>>> GetEntryCategoriesAsync();
         Task<ResultPattern<string>> CreateCategoriesAsync(List<CreateCategoryRequest> requisicao);
-        Task<ResultPattern<string>> PutCategoriesAsync(List<EntryCategories> requisicao);
+        Task<ResultPattern<string>> PutCategoriesAsync(List<TransactionCategories> requisicao);
         Task<ResultPattern<string>> DeleteCategoryByIdAsync(int id);
         #endregion
 

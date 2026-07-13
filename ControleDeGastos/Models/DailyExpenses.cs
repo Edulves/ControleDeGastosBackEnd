@@ -1,26 +1,26 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ExpensesControl.Modelos
+namespace ExpensesControl.Models
 {
     public class DailyExpenses
     {
         [Key]
         [Column("id_gastos_diarios")]
-        public int IdGastosDiarios { get; set; }
+        public int DailyExpensesId { get; set; }
         [Column("data_do_lancamento")]
-        public DateTime DataDoLancamento { get; set; }
+        public DateTime InputDate { get; set; }
         [Column("valor_gasto", TypeName = "decimal(18,2)")]
-        public decimal Valorgasto { get; set; }
+        public decimal ExpenseValue { get; set; }
         [Column("observacao")]
-        public string? Observacao { get; set; }
+        public string? Note { get; set; }
         [Column("categoria_id")]
-        public int? CategoriaId { get; set; }
+        public int? CategoryId { get; set; }
         [Column("deletado")]
-        public string Deletado { get; set; } = string.Empty;
+        public string Deleted { get; set; } = string.Empty;
 
         // propriedades de navegacão
         [ForeignKey("CategoriaId")]
-        public EntryCategories categoria { get; set; }
+        public TransactionCategories? Category { get; set; }
     }
 }

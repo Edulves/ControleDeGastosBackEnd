@@ -8,7 +8,7 @@ using ExpensesControl.DTOs.Requests.FixedExpensesRequests;
 using ExpensesControl.DTOs.Requisicoes.GastosFixosRequisicoes;
 using ExpensesControl.DTOs.Responses.DailyExpensesReponses;
 using ExpensesControl.DTOs.Responses.DataConsolidationResponses;
-using ExpensesControl.Modelos;
+using ExpensesControl.Models;
 using ExpensesControl.Repositories.RepositoriesInterface;
 using ExpensesControl.Service.ServiceInterfaces;
 
@@ -24,11 +24,11 @@ namespace ExpensesControl.Service.ServiceImplementations
 
             var modeloBanco = requisicao.Select(x => new DailyExpenses
             {
-                DataDoLancamento = x.InputDate,
-                Valorgasto = x.ExpenseValue,
-                Observacao = x.Observacao,
-                CategoriaId = x.CategoryId,
-                Deletado = "",
+                InputDate = x.InputDate,
+                ExpenseValue = x.ExpenseValue,
+                Note = x.Observacao,
+                CategoryId = x.CategoryId,
+                Deleted = "",
             }).ToList();
 
             await operacoesGenericas.CriarAsync(modeloBanco);
@@ -50,11 +50,11 @@ namespace ExpensesControl.Service.ServiceImplementations
 
             var resposta = consulta.itens.Select(x => new DailyExpensesResponse
             {
-                DailyExpenseId = x.IdGastosDiarios,
-                InputDate = x.DataDoLancamento,
-                ExpenseValue = x.Valorgasto,
-                Note = x.Observacao,
-                CategoryName = x.categoria?.NomeDaCategoria ?? "",
+                DailyExpenseId = x.DailyExpensesId,
+                InputDate = x.InputDate,
+                ExpenseValue = x.ExpenseValue,
+                Note = x.Note,
+                CategoryName = x.Category?.CategoryName ?? "",
             }).ToList();
 
             var respostaPaginada = (resposta, consulta.totalItens).ToPagedResult(requisicao.Page, requisicao.QTY);
@@ -74,10 +74,10 @@ namespace ExpensesControl.Service.ServiceImplementations
                 if (consulta == null)
                     return ResultPattern<string>.Failure($"Nenhum gasto diario de id: {item.DailyExpenseId} encontrado");
 
-                consulta.DataDoLancamento = item.InputDate == DateTime.MinValue ? consulta.DataDoLancamento : item.InputDate;
-                consulta.Valorgasto = item.ExpenseValue <= 0 ? consulta.Valorgasto : item.ExpenseValue;
-                consulta.Observacao = string.IsNullOrEmpty(item.Note) ? consulta.Observacao : item.Note;
-                consulta.CategoriaId = item.CategoryId <= 0 ? consulta.CategoriaId : item.CategoryId;
+                consulta.InputDate = item.InputDate == DateTime.MinValue ? consulta.InputDate : item.InputDate;
+                consulta.ExpenseValue = item.ExpenseValue <= 0 ? consulta.ExpenseValue : item.ExpenseValue;
+                consulta.Note = string.IsNullOrEmpty(item.Note) ? consulta.Note : item.Note;
+                consulta.CategoryId = item.CategoryId <= 0 ? consulta.CategoryId : item.CategoryId;
 
                 modeloBanco.Add(consulta);
             }
@@ -93,7 +93,7 @@ namespace ExpensesControl.Service.ServiceImplementations
             if(lancamentoParaFakeDelete == null)
                 return ResultPattern<string>.Failure($"Não existe registro de id: {id}");
 
-            lancamentoParaFakeDelete.Deletado = "*";
+            lancamentoParaFakeDelete.Deleted = "*";
 
             await operacoesGenericas.AtualizarAsync(lancamentoParaFakeDelete);
 
@@ -102,28 +102,28 @@ namespace ExpensesControl.Service.ServiceImplementations
         #endregion
 
         #region CategoriasDeGastos
-        public async Task<ResultPattern<List<EntryCategories>>> GetEntryCategoriesAsync()
+        public async Task<ResultPattern<List<TransactionCategories>>> GetEntryCategoriesAsync()
         {
             var consulta = await controleDeGastosRepositorio.ObterCategoriasDeLancamentos();
 
-            return ResultPattern<List<EntryCategories>>.Success(consulta);
+            return ResultPattern<List<TransactionCategories>>.Success(consulta);
         }
         public async Task<ResultPattern<string>> CreateCategoriesAsync(List<CreateCategoryRequest> requisicao)
         {
-            var novaCategoria = requisicao.Select(x => new EntryCategories()
+            var novaCategoria = requisicao.Select(x => new TransactionCategories()
             {
-                NomeDaCategoria = x.CategoryName.ToLower(),
+                CategoryName = x.CategoryName.ToLower(),
             }).ToList();
 
             await operacoesGenericas.CriarAsync(novaCategoria);
 
             return ResultPattern<string>.Success($"Categorias criadas com sucesso!");
         }
-        public async Task<ResultPattern<string>> PutCategoriesAsync(List<EntryCategories> requisicao)
+        public async Task<ResultPattern<string>> PutCategoriesAsync(List<TransactionCategories> requisicao)
         {
             foreach (var item in requisicao)
             {
-                item.NomeDaCategoria = item.NomeDaCategoria.ToLower();
+                item.CategoryName = item.CategoryName.ToLower();
             }
             
             await operacoesGenericas.AtualizarAsync(requisicao);
@@ -137,7 +137,7 @@ namespace ExpensesControl.Service.ServiceImplementations
             if (consulta == null)
                 return ResultPattern<string>.Failure($"Nenhuma categoria encontrada com id: {id}");
 
-            consulta.Deletado = "*";
+            consulta.Deleted = "*";
 
             await operacoesGenericas.AtualizarAsync(consulta);
 
@@ -165,15 +165,15 @@ namespace ExpensesControl.Service.ServiceImplementations
 
             var mapeamentoModelo = requisicao.Select(x => new FixedExpenseResult
             {
-                DescricaoGastoFixo = x.FixedExpenseDescription,
-                ValorGastoFixo = x.FixedExpenseValue,
-                DataDoLancamento = x.InputDate
+                FixedExpenseDescription = x.FixedExpenseDescription,
+                FixedExpenseValue = x.FixedExpenseValue,
+                InputDate = x.InputDate
             }).ToList();
 
             foreach (var item in mapeamentoModelo)
             {
-                if (item.DataDoLancamento == DateTime.MinValue)
-                    return ResultPattern<string>.Failure($"Invalid date {item.DataDoLancamento}", "Invalid date");
+                if (item.InputDate == DateTime.MinValue)
+                    return ResultPattern<string>.Failure($"Invalid date {item.InputDate}", "Invalid date");
             }
 
             await operacoesGenericas.CriarAsync(mapeamentoModelo);
@@ -193,18 +193,18 @@ namespace ExpensesControl.Service.ServiceImplementations
                 if (consulta == null){
                     modeloBanco.Add(new FixedExpenseResult()
                     {
-                        DescricaoGastoFixo = item.FixedExpenseDescription,
-                        ValorGastoFixo = item.FixedExpenseValue,
-                        DataDoLancamento = item.InputDate
+                        FixedExpenseDescription = item.FixedExpenseDescription,
+                        FixedExpenseValue = item.FixedExpenseValue,
+                        InputDate = item.InputDate
                     });
 
                     continue;
                 }
 
-                consulta.DescricaoGastoFixo = string.IsNullOrEmpty(item.FixedExpenseDescription) ? consulta.DescricaoGastoFixo : item.FixedExpenseDescription;
-                consulta.ValorGastoFixo = item.FixedExpenseValue <= 0 ? consulta.ValorGastoFixo : item.FixedExpenseValue;
-                consulta.Pago = item.Paid ?? consulta.Pago;
-                consulta.DataDoLancamento = item.InputDate == DateTime.MinValue ? consulta.DataDoLancamento : item.InputDate;
+                consulta.FixedExpenseDescription = string.IsNullOrEmpty(item.FixedExpenseDescription) ? consulta.FixedExpenseDescription : item.FixedExpenseDescription;
+                consulta.FixedExpenseValue = item.FixedExpenseValue <= 0 ? consulta.FixedExpenseValue : item.FixedExpenseValue;
+                consulta.Paid = item.Paid ?? consulta.Paid;
+                consulta.InputDate = item.InputDate == DateTime.MinValue ? consulta.InputDate : item.InputDate;
 
                 modeloBanco.Add(consulta);
             }
@@ -220,7 +220,7 @@ namespace ExpensesControl.Service.ServiceImplementations
             if (lancamentoParaFakeDelete == null)
                 return ResultPattern<string>.Failure($"Não existe registro de id: {id}");
 
-            lancamentoParaFakeDelete.Deletado = "*";
+            lancamentoParaFakeDelete.Deleted = "*";
 
             await operacoesGenericas.AtualizarAsync(lancamentoParaFakeDelete);
 
@@ -244,12 +244,12 @@ namespace ExpensesControl.Service.ServiceImplementations
             if(consultaGastosDiarios.Count <= 0)
                 return ResultPattern<DailyExpensesPerCategoryResult>.Failure("Nenhum gasto encontrado para os filtros ultilizados");
 
-            var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.CategoriaId);
+            var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.CategoryId);
 
             var GastosPorCategoria = consultaAgrupada.Select(x => new GetDailyExpensesByCategoryReponse()
             {
-                CategoryName = x.First().categoria.NomeDaCategoria,
-                ExpenseValue = x.Sum(x => x.Valorgasto),
+                CategoryName = x.First().Category.CategoryName,
+                ExpenseValue = x.Sum(x => x.ExpenseValue),
             }).OrderByDescending(x => x.ExpenseValue).ToList();
 
             var resposta = new DailyExpensesPerCategoryResult();
@@ -271,12 +271,12 @@ namespace ExpensesControl.Service.ServiceImplementations
             if (consultaGastosDiarios.Count <= 0)
                 return ResultPattern<DailyExpensesConsolidationResult>.Failure("Nenhum gasto diario encontrado");
 
-            var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.DataDoLancamento.Date);
+            var consultaAgrupada = consultaGastosDiarios.GroupBy(x => x.InputDate.Date);
            
             var GastosPorCategoria = consultaAgrupada.Select(x => new GetDailyExpensesByDayResponse()
             {
                 InputDate =  x.Key,
-                ExpenseValuePerDay = x.Sum(x => x.Valorgasto)
+                ExpenseValuePerDay = x.Sum(x => x.ExpenseValue)
             }).OrderBy(x => x.InputDate).ToList();
 
             var resposta = new DailyExpensesConsolidationResult();
@@ -301,8 +301,8 @@ namespace ExpensesControl.Service.ServiceImplementations
 
             var resposta = new TotalFixedExpensesComparasionResponse()
             {
-                PaidValue = consultaGastosFixos.Where(x => x.Pago).Sum(x => x.ValorGastoFixo),
-                NotPaidValue = consultaGastosFixos.Where(x => !x.Pago).Sum(x => x.ValorGastoFixo),
+                PaidValue = consultaGastosFixos.Where(x => x.Paid).Sum(x => x.FixedExpenseValue),
+                NotPaidValue = consultaGastosFixos.Where(x => !x.Paid).Sum(x => x.FixedExpenseValue),
             };
 
             return ResultPattern<TotalFixedExpensesComparasionResponse>.Success(resposta);
