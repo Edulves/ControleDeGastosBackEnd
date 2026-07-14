@@ -15,11 +15,11 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         public IQueryable<DailyExpenses> ObterGastosDiariosBase(GetDailyExpensesRequest requisicao)
         {
             return context.gastos_diarios
-            .FiltrarPorCategorias(requisicao.Category)
-            .FiltrarPorPeriodoDeLancamento(requisicao.BeginningOfPeriod, requisicao.EndOfPeriod)
-            .FiltrarPorMeseAno(requisicao.Year, requisicao.Month)
-            .FiltrarPorObservacao(requisicao.Note)
-            .FiltrarRemoverDeletados()
+            .FilterByCategory(requisicao.Category)
+            .FilterByTransactionPeriod(requisicao.BeginningOfPeriod, requisicao.EndOfPeriod)
+            .FilterByMonthAndYear(requisicao.Year, requisicao.Month)
+            .FilterByNote(requisicao.Note)
+            .FilterRemoveDeleted()
             .Include(x => x.Category)
             .OrderBy(x => x.InputDate)
             .ThenBy(x => x.DailyExpensesId);
@@ -45,7 +45,7 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         #region CategoriasDeGastos
         public IQueryable<TransactionCategories> ObterCategoriasDeLancamentosBase()
         {
-            return context.categorias_de_lancamentos.FiltrarRemoverDeletados();
+            return context.categorias_de_lancamentos.FilterRemoveDeleted();
         }
         public async Task<List<TransactionCategories>> ObterCategoriasDeLancamentos()
         {
@@ -61,10 +61,10 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         public IQueryable<FixedExpenseResult> ObterGastosFixosBase(GetFixedExpensesRequest requisicao)
         {
             return context.gastos_fixos
-            .FiltrarRemoverDeletados()
-            .FiltrarPorDescricao(requisicao.ExpenseDescription)
-            .FiltrarPorMeseAno(requisicao.Year, requisicao.Month)
-            .FiltrarPorPeriodo(requisicao.BeginningOfPeriod, requisicao.EndOfPeriod)
+            .FilterRemoveDeleteds()
+            .FilterByDescription(requisicao.ExpenseDescription)
+            .FilterByMonthAndYear(requisicao.Year, requisicao.Month)
+            .FilterByPeriod(requisicao.BeginningOfPeriod, requisicao.EndOfPeriod)
             .OrderBy(x => x.InputDate)
             .ThenBy(x => x.FixedExpenseId);
         }
