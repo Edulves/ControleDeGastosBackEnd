@@ -1,6 +1,6 @@
 ﻿namespace ExpensesControl.DTOs.Responses.DailyExpensesReponses;
 
-public class DailyExpensesResponse
+public class DailyExpenseResponse
 {
     public int DailyExpenseId { get; set; }
     public DateTime InputDate { get; set; }

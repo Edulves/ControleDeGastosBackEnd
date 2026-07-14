@@ -13,7 +13,7 @@ namespace ExpensesControl.Controllers
         private readonly IExpensesControlService _expensesControlService = expensesControlService;
     
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionCategories>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionCategory>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> Get()
@@ -22,7 +22,7 @@ namespace ExpensesControl.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionCategories>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionCategory>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> Post([FromBody] List<CreateCategoryRequest> request)
@@ -31,16 +31,16 @@ namespace ExpensesControl.Controllers
         }
 
         [HttpPut]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionCategories>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionCategory>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
-        public async Task<IActionResult> Put([FromBody] List<TransactionCategories> request)
+        public async Task<IActionResult> Put([FromBody] List<TransactionCategory> request)
         {
             return (await _expensesControlService.PutCategoriesAsync(request)).ToIActionResult(this);
         }
 
         [HttpDelete("{id:int}")]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionCategories>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<TransactionCategory>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> Delete([FromRoute] int id)

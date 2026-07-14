@@ -7,8 +7,8 @@ namespace ExpensesControl.Data.Contexto
     {
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
-        public DbSet<TransactionCategories> categorias_de_lancamentos { get; set; }
-        public DbSet<DailyExpenses> gastos_diarios { get; set; }
-        public DbSet<FixedExpenseResult> gastos_fixos { get; set; }
+        public DbSet<TransactionCategory> categorias_de_lancamentos { get; set; }
+        public DbSet<DailyExpense> gastos_diarios { get; set; }
+        public DbSet<FixedExpense> gastos_fixos { get; set; }
     }
 }

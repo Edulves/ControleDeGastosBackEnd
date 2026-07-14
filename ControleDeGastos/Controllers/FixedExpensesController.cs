@@ -14,7 +14,7 @@ namespace ExpensesControl.Controllers
         private readonly IExpensesControlService _expensesControlService = expensesControlService;
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<FixedExpenseResult>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<FixedExpense>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> Get([FromQuery] GetFixedExpensesRequest request)
@@ -23,7 +23,7 @@ namespace ExpensesControl.Controllers
         }
 
         [HttpPost]
-        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(List<FixedExpenseResult>))]
+        [ProducesResponseType(StatusCodes.Status201Created, Type = typeof(List<FixedExpense>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> Post([FromBody] List<PostFixedExpensesDto> request)

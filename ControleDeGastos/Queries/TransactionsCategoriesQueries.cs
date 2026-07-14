@@ -4,7 +4,7 @@ namespace ExpensesControl.Queries;
 
 public static class TransactionsCategoriesQueries
 {
-    public static IQueryable<TransactionCategories> FilterRemoveDeleted(this IQueryable<TransactionCategories> query)
+    public static IQueryable<TransactionCategory> FilterRemoveDeleted(this IQueryable<TransactionCategory> query)
     {
         return query.Where(x => x.Deleted != "*");
     }

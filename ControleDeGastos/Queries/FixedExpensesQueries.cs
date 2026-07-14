@@ -4,11 +4,11 @@ namespace ExpensesControl.Queries;
 
 public static class FixedExpensesQueries
 {
-    public static IQueryable<FixedExpenseResult> FilterRemoveDeleteds(this IQueryable<FixedExpenseResult> query)
+    public static IQueryable<FixedExpense> FilterRemoveDeleteds(this IQueryable<FixedExpense> query)
     {
         return query.Where(x => x.Deleted != "*");
     }
-    public static IQueryable<FixedExpenseResult> FilterByPeriod(this IQueryable<FixedExpenseResult> query, DateTime beginningOfPeriod, DateTime endOfPeriod)
+    public static IQueryable<FixedExpense> FilterByPeriod(this IQueryable<FixedExpense> query, DateTime beginningOfPeriod, DateTime endOfPeriod)
     {
         if(beginningOfPeriod == DateTime.MinValue || endOfPeriod == DateTime.MinValue) 
             return query;
@@ -18,14 +18,14 @@ public static class FixedExpensesQueries
 
         return query.Where(x => x.InputDate.Date >= beginningOfPeriod && x.InputDate.Date  <= endOfPeriod);
     }
-    public static IQueryable<FixedExpenseResult> FilterByMonthAndYear(this IQueryable<FixedExpenseResult> query, int year, int month)
+    public static IQueryable<FixedExpense> FilterByMonthAndYear(this IQueryable<FixedExpense> query, int year, int month)
     {
         if (year == 0 || month == 0)
             return query;
 
         return query.Where(x => x.InputDate.Year == year && x.InputDate.Month == month);
     }
-    public static IQueryable<FixedExpenseResult> FilterByDescription(this IQueryable<FixedExpenseResult> query, string description)
+    public static IQueryable<FixedExpense> FilterByDescription(this IQueryable<FixedExpense> query, string description)
     {
         if (string.IsNullOrEmpty(description))
             return query;

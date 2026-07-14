@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExpensesControl.Models
 {
-    public class DailyExpenses
+    public class DailyExpense
     {
         [Key]
         [Column("id_gastos_diarios")]
@@ -21,6 +21,6 @@ namespace ExpensesControl.Models
 
         // propriedades de navegacão
         [ForeignKey("CategoriaId")]
-        public TransactionCategories? Category { get; set; }
+        public TransactionCategory? Category { get; set; }
     }
 }

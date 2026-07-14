@@ -12,7 +12,7 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
     public class ExpensesControlRepository(AppDbContext context) : IExpensesControlRepository
     {
         #region DailyExpenses
-        public IQueryable<DailyExpenses> GetDailyExpensesBase(GetDailyExpensesRequest request)
+        public IQueryable<DailyExpense> GetDailyExpensesBase(GetDailyExpensesRequest request)
         {
             return context.gastos_diarios
             .FilterByCategory(request.Category)
@@ -28,37 +28,37 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         {
             return await GetDailyExpensesBase(request).SumAsync(x => x.ExpenseValue);
         }
-        public async Task<List<DailyExpenses>> GetListDailyExpenses(GetDailyExpensesRequest request)
+        public async Task<List<DailyExpense>> GetListDailyExpenses(GetDailyExpensesRequest request)
         {
             return await GetDailyExpensesBase(request).ToListAsync();
         }
-        public async Task<(List<DailyExpenses> items, int totalItems)> GetDailyExpensesPaginated(GetDailyExpensesRequest request)
+        public async Task<(List<DailyExpense> items, int totalItems)> GetDailyExpensesPaginated(GetDailyExpensesRequest request)
         {
             return await GetDailyExpensesBase(request).PaginateAsync(request.Page, request.QTY);
         }
-        public async Task<DailyExpenses?> GetDailyExpensesById(int id)
+        public async Task<DailyExpense?> GetDailyExpensesById(int id)
         {
             return await context.gastos_diarios.FindAsync(id);
         }
         #endregion
 
         #region TransactionCategory
-        public IQueryable<TransactionCategories> GetTransactionCategoriesBase()
+        public IQueryable<TransactionCategory> GetTransactionCategoriesBase()
         {
             return context.categorias_de_lancamentos.FilterRemoveDeleted();
         }
-        public async Task<List<TransactionCategories>> GetTransactionCategories()
+        public async Task<List<TransactionCategory>> GetTransactionCategories()
         {
             return await GetTransactionCategoriesBase().OrderBy(x => x.CategoryName).ToListAsync();
         }
-        public async Task<TransactionCategories?> GetTransactionCategoryById(int id)
+        public async Task<TransactionCategory?> GetTransactionCategoryById(int id)
         {
             return await context.categorias_de_lancamentos.FindAsync(id);
         }
         #endregion
 
         #region FixedExpenses
-        public IQueryable<FixedExpenseResult> GetFixedExpensesBase(GetFixedExpensesRequest request)
+        public IQueryable<FixedExpense> GetFixedExpensesBase(GetFixedExpensesRequest request)
         {
             return context.gastos_fixos
             .FilterRemoveDeleteds()
@@ -68,7 +68,7 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
             .OrderBy(x => x.InputDate)
             .ThenBy(x => x.FixedExpenseId);
         }
-        public async Task<List<FixedExpenseResult>> GetFixedExpensesList(GetFixedExpensesRequest request)
+        public async Task<List<FixedExpense>> GetFixedExpensesList(GetFixedExpensesRequest request)
         {
             return await GetFixedExpensesBase(request).ToListAsync();
         }
@@ -76,11 +76,11 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         {
             return await  GetFixedExpensesBase(request).SumAsync(x => x.FixedExpenseValue);
         }
-        public async Task<(List<FixedExpenseResult> items, int totalItems)> GetFixedExpenses(GetFixedExpensesRequest request)
+        public async Task<(List<FixedExpense> items, int totalItems)> GetFixedExpenses(GetFixedExpensesRequest request)
         {
             return await GetFixedExpensesBase(request).PaginateAsync(request.Page, request.QTY);
         }
-        public async Task<FixedExpenseResult?> GetFixedExpensesById(int id)
+        public async Task<FixedExpense?> GetFixedExpensesById(int id)
         {
             return await context.gastos_fixos.FindAsync(id);
         }

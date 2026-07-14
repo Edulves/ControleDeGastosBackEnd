@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExpensesControl.Models;
 
-public class TransactionCategories
+public class TransactionCategory
 {
     [Key]
     [Column("id_categoria_de_lancamentos")]

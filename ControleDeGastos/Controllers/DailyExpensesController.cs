@@ -14,7 +14,7 @@ namespace ExpensesControl.Controllers
         private readonly IExpensesControlService _expensesControlService = expensesControlService;
 
         [HttpGet]
-        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<DailyExpensesResponse>))]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<DailyExpenseResponse>))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
         public async Task<IActionResult> Get([FromQuery] GetDailyExpensesRequest request)
