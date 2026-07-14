@@ -9,12 +9,13 @@ using ExpensesControl.DTOs.Requisicoes.GastosFixosRequisicoes;
 using ExpensesControl.DTOs.Responses.DailyExpensesReponses;
 using ExpensesControl.DTOs.Responses.DataConsolidationResponses;
 using ExpensesControl.Models;
+using ExpensesControl.Repositories.InterfaceRepositories;
 using ExpensesControl.Repositories.RepositoriesInterface;
 using ExpensesControl.Service.ServiceInterfaces;
 
 namespace ExpensesControl.Service.ServiceImplementations
 {
-    public class ExpensesControlService(IExpensesControlRepositories controleDeGastosRepositorio, IGenericOperations operacoesGenericas) : IExpensesControlService
+    public class ExpensesControlService(IExpensesControlRepository controleDeGastosRepositorio, IGenericOperationsRepository operacoesGenericas) : IExpensesControlService
     {
         #region GastosDiarios
         public async Task<ResultPattern<string>> CreateDailyExpensesEntriesAsync(List<DailyExpenseEntryRequest> requisicao)
@@ -26,12 +27,12 @@ namespace ExpensesControl.Service.ServiceImplementations
             {
                 InputDate = x.InputDate,
                 ExpenseValue = x.ExpenseValue,
-                Note = x.Observacao,
+                Note = x.Note,
                 CategoryId = x.CategoryId,
                 Deleted = "",
             }).ToList();
 
-            await operacoesGenericas.CriarAsync(modeloBanco);
+            await operacoesGenericas.CreateAsync(modeloBanco);
 
             return ResultPattern<string>.Success("Gasto cadrastrado com sucesso!");
         }
@@ -43,7 +44,7 @@ namespace ExpensesControl.Service.ServiceImplementations
             if (requisicao.Page < 1)
                 return ResultPattern<PagedResult<DailyExpensesResponse>>.Failure("Pagina indicada não existe");
 
-            var consulta = await controleDeGastosRepositorio.ObterGastosDiariosPaginado(requisicao);
+            var consulta = await controleDeGastosRepositorio.GetDailyExpensesPaginated(requisicao);
 
             if (consulta.itens.Count <= 0)
                 return ResultPattern<PagedResult<DailyExpensesResponse>>.Failure("Nenhu registro de gastos encontrado");
@@ -70,7 +71,7 @@ namespace ExpensesControl.Service.ServiceImplementations
 
             foreach (var item in requisicao)
             {
-                var consulta = await controleDeGastosRepositorio.ObterGastoDiarioPorId(item.DailyExpenseId);
+                var consulta = await controleDeGastosRepositorio.GetDailyExpensesById(item.DailyExpenseId);
                 if (consulta == null)
                     return ResultPattern<string>.Failure($"Nenhum gasto diario de id: {item.DailyExpenseId} encontrado");
 
@@ -82,20 +83,20 @@ namespace ExpensesControl.Service.ServiceImplementations
                 modeloBanco.Add(consulta);
             }
 
-            await operacoesGenericas.AtualizarAsync(modeloBanco);
+            await operacoesGenericas.UpdateAsync(modeloBanco);
 
             return ResultPattern<string>.Success("Itens atualizados com sucesso!");
         }
         public async Task<ResultPattern<string>> DeleteDailyExpenseEntryByIdAsync(int id)
         {
-            var lancamentoParaFakeDelete = await controleDeGastosRepositorio.ObterGastoDiarioPorId(id);
+            var lancamentoParaFakeDelete = await controleDeGastosRepositorio.GetDailyExpensesById(id);
 
             if(lancamentoParaFakeDelete == null)
                 return ResultPattern<string>.Failure($"Não existe registro de id: {id}");
 
             lancamentoParaFakeDelete.Deleted = "*";
 
-            await operacoesGenericas.AtualizarAsync(lancamentoParaFakeDelete);
+            await operacoesGenericas.UpdateAsync(lancamentoParaFakeDelete);
 
             return ResultPattern<string>.Success("Item 'deletado' com sucesso!");
         }
@@ -104,7 +105,7 @@ namespace ExpensesControl.Service.ServiceImplementations
         #region CategoriasDeGastos
         public async Task<ResultPattern<List<TransactionCategories>>> GetEntryCategoriesAsync()
         {
-            var consulta = await controleDeGastosRepositorio.ObterCategoriasDeLancamentos();
+            var consulta = await controleDeGastosRepositorio.GetTransactionCategories();
 
             return ResultPattern<List<TransactionCategories>>.Success(consulta);
         }
@@ -115,7 +116,7 @@ namespace ExpensesControl.Service.ServiceImplementations
                 CategoryName = x.CategoryName.ToLower(),
             }).ToList();
 
-            await operacoesGenericas.CriarAsync(novaCategoria);
+            await operacoesGenericas.CreateAsync(novaCategoria);
 
             return ResultPattern<string>.Success($"Categorias criadas com sucesso!");
         }
@@ -126,20 +127,20 @@ namespace ExpensesControl.Service.ServiceImplementations
                 item.CategoryName = item.CategoryName.ToLower();
             }
             
-            await operacoesGenericas.AtualizarAsync(requisicao);
+            await operacoesGenericas.UpdateAsync(requisicao);
 
             return ResultPattern<string>.Success($"Categorias atualizadas com sucesso!");
         }
         public async Task<ResultPattern<string>> DeleteCategoryByIdAsync(int id)
         {
-            var consulta = await controleDeGastosRepositorio.ObterCategoriasDeLancamentosPorId(id);
+            var consulta = await controleDeGastosRepositorio.GetTransactionCategoryById(id);
 
             if (consulta == null)
                 return ResultPattern<string>.Failure($"Nenhuma categoria encontrada com id: {id}");
 
             consulta.Deleted = "*";
 
-            await operacoesGenericas.AtualizarAsync(consulta);
+            await operacoesGenericas.UpdateAsync(consulta);
 
             return ResultPattern<string>.Success($"Categoria deletada com sucesso!");
         }
@@ -154,7 +155,7 @@ namespace ExpensesControl.Service.ServiceImplementations
             if (requisicao.Page < 1)
                 return ResultPattern<PagedResult<FixedExpenseResult>>.Failure("Pagina indicada não existe");
 
-            var consulta = await controleDeGastosRepositorio.ObterGastosFixos(requisicao);
+            var consulta = await controleDeGastosRepositorio.GetFixedExpenses(requisicao);
 
             var respostaPaginada = (consulta.itens, consulta.totalItens).ToPagedResult(requisicao.Page, requisicao.QTY);
 
@@ -176,7 +177,7 @@ namespace ExpensesControl.Service.ServiceImplementations
                     return ResultPattern<string>.Failure($"Invalid date {item.InputDate}", "Invalid date");
             }
 
-            await operacoesGenericas.CriarAsync(mapeamentoModelo);
+            await operacoesGenericas.CreateAsync(mapeamentoModelo);
 
             return ResultPattern<string>.Success("Gastos fixo criados com sucesso!", StatusCodes.Status201Created);
         }
@@ -189,7 +190,7 @@ namespace ExpensesControl.Service.ServiceImplementations
 
             foreach (var item in requisicao)
             {
-                var consulta = await controleDeGastosRepositorio.ObterGastosFixosPorId(item.FixedExpensesId);
+                var consulta = await controleDeGastosRepositorio.GetFixedExpensesById(item.FixedExpensesId);
                 if (consulta == null){
                     modeloBanco.Add(new FixedExpenseResult()
                     {
@@ -209,20 +210,20 @@ namespace ExpensesControl.Service.ServiceImplementations
                 modeloBanco.Add(consulta);
             }
 
-            await operacoesGenericas.AtualizarAsync(modeloBanco);
+            await operacoesGenericas.UpdateAsync(modeloBanco);
 
             return ResultPattern<string>.Success("Gastos fixo atualizados com sucesso!");
         }
         public async Task<ResultPattern<string>> DeleteFixedExpensesAsync(int id)
         {
-            var lancamentoParaFakeDelete = await controleDeGastosRepositorio.ObterGastosFixosPorId(id);
+            var lancamentoParaFakeDelete = await controleDeGastosRepositorio.GetFixedExpensesById(id);
 
             if (lancamentoParaFakeDelete == null)
                 return ResultPattern<string>.Failure($"Não existe registro de id: {id}");
 
             lancamentoParaFakeDelete.Deleted = "*";
 
-            await operacoesGenericas.AtualizarAsync(lancamentoParaFakeDelete);
+            await operacoesGenericas.UpdateAsync(lancamentoParaFakeDelete);
 
             return ResultPattern<string>.Success("Item 'deletado' com sucesso!");
         }
@@ -239,7 +240,7 @@ namespace ExpensesControl.Service.ServiceImplementations
                 Month = requisicao.Month
             };
 
-            var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
+            var consultaGastosDiarios = await controleDeGastosRepositorio.GetListDailyExpenses(filtro);
             
             if(consultaGastosDiarios.Count <= 0)
                 return ResultPattern<DailyExpensesPerCategoryResult>.Failure("Nenhum gasto encontrado para os filtros ultilizados");
@@ -266,7 +267,7 @@ namespace ExpensesControl.Service.ServiceImplementations
                 Month = requisicao.Month
             };
 
-            var consultaGastosDiarios = await controleDeGastosRepositorio.ObterGastosDiariosLista(filtro);
+            var consultaGastosDiarios = await controleDeGastosRepositorio.GetListDailyExpenses(filtro);
 
             if (consultaGastosDiarios.Count <= 0)
                 return ResultPattern<DailyExpensesConsolidationResult>.Failure("Nenhum gasto diario encontrado");
@@ -294,7 +295,7 @@ namespace ExpensesControl.Service.ServiceImplementations
                 Month = requisicao.Month,
             };
 
-            var consultaGastosFixos = await controleDeGastosRepositorio.ObterGastosFixosLista(filtro);
+            var consultaGastosFixos = await controleDeGastosRepositorio.GetFixedExpensesList(filtro);
 
             if (consultaGastosFixos.Count <= 0)
                 return ResultPattern<TotalFixedExpensesComparasionResponse>.Failure("NenhumGastoFixoEncontrado");
@@ -316,7 +317,7 @@ namespace ExpensesControl.Service.ServiceImplementations
                 Month = requisicao.Month,
             };
 
-            var somaGastosDiarios = await controleDeGastosRepositorio.ObterSomaGastosDiarios(filtro);
+            var somaGastosDiarios = await controleDeGastosRepositorio.GetDailyExpensesSum(filtro);
 
             var resposta = new TotalExpensesResponse() { TotalExpenses = somaGastosDiarios };
 
