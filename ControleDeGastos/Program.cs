@@ -1,4 +1,3 @@
-using ControleDeGastos.DependecyInjection;
 using ExpensesControl.Data.Contexto;
 using ExpensesControl.DependecyInjection;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +6,6 @@ using Scalar.AspNetCore;
 var builder = WebApplication.CreateBuilder(args);
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();

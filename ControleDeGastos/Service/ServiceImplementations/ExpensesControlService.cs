@@ -203,7 +203,7 @@ public class ExpensesControlService(IExpensesControlRepository expensesControlRe
 
             result.FixedExpenseDescription = string.IsNullOrEmpty(item.FixedExpenseDescription) ? result.FixedExpenseDescription : item.FixedExpenseDescription;
             result.FixedExpenseValue = item.FixedExpenseValue <= 0 ? result.FixedExpenseValue : item.FixedExpenseValue;
-            result.Paid = item.Paid ?? result.Paid;
+            result.Paid = item.Paid;
             result.InputDate = item.InputDate == DateTime.MinValue ? result.InputDate : item.InputDate;
 
             FixedExpenseModel.Add(result);

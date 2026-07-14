@@ -4,7 +4,6 @@ using ExpensesControl.DTOs.Requests.CategoriesRequests;
 using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
 using ExpensesControl.DTOs.Requests.DataConsolidationRequests;
 using ExpensesControl.DTOs.Requests.FixedExpensesRequests;
-using ExpensesControl.DTOs.Requisicoes.GastosFixosRequisicoes;
 using ExpensesControl.DTOs.Responses.DailyExpensesReponses;
 using ExpensesControl.DTOs.Responses.DataConsolidationResponses;
 using ExpensesControl.Models;
