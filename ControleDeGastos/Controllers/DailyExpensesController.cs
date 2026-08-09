@@ -9,9 +9,9 @@ namespace ExpensesControl.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class DailyExpensesController(IExpensesControlService expensesControlService) : ControllerBase
+    public class DailyExpensesController(IDailyExpensesService expensesControlService) : ControllerBase
     {
-        private readonly IExpensesControlService _expensesControlService = expensesControlService;
+        private readonly IDailyExpensesService _expensesControlService = expensesControlService;
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<DailyExpenseResponse>))]

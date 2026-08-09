@@ -21,12 +21,12 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
             .FilterByNote(request.Note)
             .FilterRemoveDeleted()
             .Include(x => x.TransactionCategory)
-            .OrderBy(x => x.InputDate)
-            .ThenBy(x => x.DailyExpensesId);
+            .OrderBy(x => x.CreatedAt)
+            .ThenBy(x => x.DailyExpenseId);
         }
         public async Task<decimal> GetDailyExpensesSum(GetDailyExpensesRequest request)
         {
-            return await GetDailyExpensesBase(request).SumAsync(x => x.ExpenseValue);
+            return await GetDailyExpensesBase(request).SumAsync(x => x.Amount);
         }
         public async Task<List<DailyExpense>> GetListDailyExpenses(GetDailyExpensesRequest request)
         {
@@ -49,7 +49,7 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         }
         public async Task<List<TransactionCategory>> GetTransactionCategories()
         {
-            return await GetTransactionCategoriesBase().OrderBy(x => x.CategoryName).ToListAsync();
+            return await GetTransactionCategoriesBase().OrderBy(x => x.Name).ToListAsync();
         }
         public async Task<TransactionCategory?> GetTransactionCategoryById(int id)
         {
@@ -65,7 +65,7 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
             .FilterByDescription(request.ExpenseDescription)
             .FilterByMonthAndYear(request.Year, request.Month)
             .FilterByPeriod(request.BeginningOfPeriod, request.EndOfPeriod)
-            .OrderBy(x => x.InputDate)
+            .OrderBy(x => x.CreatedAt)
             .ThenBy(x => x.FixedExpenseId);
         }
         public async Task<List<FixedExpense>> GetFixedExpensesList(GetFixedExpensesRequest request)
@@ -74,7 +74,7 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         }
         public async Task<decimal> GetFixedExpensesSum(GetFixedExpensesRequest request)
         {
-            return await  GetFixedExpensesBase(request).SumAsync(x => x.FixedExpenseValue);
+            return await  GetFixedExpensesBase(request).SumAsync(x => x.Amount);
         }
         public async Task<(List<FixedExpense> items, int totalItems)> GetFixedExpenses(GetFixedExpensesRequest request)
         {

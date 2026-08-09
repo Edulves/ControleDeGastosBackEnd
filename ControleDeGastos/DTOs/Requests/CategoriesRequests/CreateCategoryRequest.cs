@@ -6,6 +6,6 @@ namespace ExpensesControl.DTOs.Requests.CategoriesRequests
     {
         [Required]
         [MinLength(3)]
-        public string CategoryName { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
     }
 }

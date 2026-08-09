@@ -1,7 +1,6 @@
 using ExpensesControl.Data.Contexto;
 using ExpensesControl.DependecyInjection;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,8 +12,6 @@ if (string.IsNullOrWhiteSpace(connectionString))
         "Connection string 'DefaultConnection' was not found.");
 }
 
-
-builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddServicesInjection();
 builder.Services.AddDependencyInjectionRepositories();

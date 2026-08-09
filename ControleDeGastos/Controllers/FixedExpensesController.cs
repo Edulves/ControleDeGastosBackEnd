@@ -8,9 +8,9 @@ namespace ExpensesControl.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class FixedExpensesController(IExpensesControlService expensesControlService) : ControllerBase
+    public class FixedExpensesController(IFixedExpensesService expensesControlService) : ControllerBase
     {
-        private readonly IExpensesControlService _expensesControlService = expensesControlService;
+        private readonly IFixedExpensesService _expensesControlService = expensesControlService;
 
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<FixedExpense>))]

@@ -8,8 +8,6 @@ public class TransactionCategoryConfiguration : IEntityTypeConfiguration<Transac
 {
     public void Configure(EntityTypeBuilder<TransactionCategory> builder)
     {
-        builder.ToTable("transaction_categories");
-
         builder.HasKey(x => x.TransactionCategoryId);
 
         builder.Property(x => x.Name)

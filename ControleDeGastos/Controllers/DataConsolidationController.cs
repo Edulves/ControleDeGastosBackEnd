@@ -8,9 +8,9 @@ namespace ExpensesControl.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class DataConsolidationController(IExpensesControlService expensesControlService) : ControllerBase
+    public class DataConsolidationController(IConsolidationService expensesControlService) : ControllerBase
     {
-        private readonly IExpensesControlService _expensesControlService = expensesControlService;
+        private readonly IConsolidationService _expensesControlService = expensesControlService;
 
         [HttpGet("ExpensesPerCategory")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(List<DailyExpensesPerCategoryResult>))]

@@ -8,8 +8,6 @@ public class FixedExpenseConfiguration : IEntityTypeConfiguration<FixedExpense>
 {
     public void Configure(EntityTypeBuilder<FixedExpense> builder)
     {
-        builder.ToTable("fixed_expenses");
-
         builder.HasKey(x => x.FixedExpenseId);
 
         builder.Property(x => x.Description)
@@ -19,13 +17,13 @@ public class FixedExpenseConfiguration : IEntityTypeConfiguration<FixedExpense>
         builder.Property(x => x.Amount)
             .HasPrecision(18, 2);
 
+        builder.Property(x => x.IsPaid)
+            .HasDefaultValue(false);
+
         builder.Property(x => x.CreatedAt)
             .IsRequired();
 
         builder.Property(x => x.IsDeleted)
-            .HasDefaultValue(false);
-
-        builder.Property(x => x.IsPaid)
             .HasDefaultValue(false);
     }
 }

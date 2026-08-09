@@ -6,14 +6,14 @@ public static class DailyExpensesQueries
 {
     public static IQueryable<DailyExpense> FilterRemoveDeleted(this IQueryable<DailyExpense> query)
     { 
-        return query.Where(x => x.Deleted != "*");
+        return query.Where(x => x.IsDeleted != true);
     }
     public static IQueryable<DailyExpense> FilterByMonthAndYear(this IQueryable<DailyExpense> query, int year, int month)
     {
         if (year == 0 || month == 0)
             return query;
         
-        return query.Where(x => x.InputDate.Year == year && x.InputDate.Month == month);
+        return query.Where(x => x.CreatedAt.Year == year && x.CreatedAt.Month == month);
     }
     public static IQueryable<DailyExpense> FilterByTransactionPeriod(this IQueryable<DailyExpense> query, DateTime beginningOfPeriod, DateTime endOfPeriod)
     {
@@ -23,7 +23,7 @@ public static class DailyExpensesQueries
         if(endOfPeriod < beginningOfPeriod)
             return query;
 
-        return query.Where(x => x.InputDate.Date >= beginningOfPeriod.Date && x.InputDate.Date <= endOfPeriod.Date);
+        return query.Where(x => x.CreatedAt.Date >= beginningOfPeriod.Date && x.CreatedAt.Date <= endOfPeriod.Date);
     }
 
     public static IQueryable<DailyExpense> FilterByCategory(this IQueryable<DailyExpense> query, string Category)
@@ -31,7 +31,7 @@ public static class DailyExpensesQueries
         if(string.IsNullOrEmpty(Category))
             return query;
         
-        return query.Where(x => x.TransactionCategory != null && x.TransactionCategory.CategoryName.Contains(Category, StringComparison.CurrentCultureIgnoreCase));
+        return query.Where(x => x.TransactionCategory != null && x.TransactionCategory.Name.Contains(Category, StringComparison.CurrentCultureIgnoreCase));
     }
 
     public static IQueryable<DailyExpense> FilterByNote(this IQueryable<DailyExpense> query, string Observacao)

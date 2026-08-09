@@ -6,10 +6,10 @@ namespace ExpensesControl.DTOs.Requests.FixedExpensesRequests
     {
         [Required]
         [Length(3, 100, ErrorMessage = "The fixed expense description must be between 3 and 100 characters long")]
-        public string FixedExpenseDescription { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
         [Required]
-        public decimal FixedExpenseValue { get; set; }
+        public decimal Amount { get; set; }
         [Required]
-        public DateTime InputDate { get; set; }
+        public DateTime CreatedAt { get; set; }
     }
 }

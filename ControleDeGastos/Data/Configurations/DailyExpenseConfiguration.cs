@@ -4,12 +4,10 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ExpensesControl.Data.Configurations;
 
-public class DailyExpenseConfiguration : IEntityTypeConfiguration<DailyExpense>
+public class DailyExpenseConfiguration: IEntityTypeConfiguration<DailyExpense>
 {
     public void Configure(EntityTypeBuilder<DailyExpense> builder)
     {
-        builder.ToTable("daily_expenses");
-
         builder.HasKey(x => x.DailyExpenseId);
 
         builder.Property(x => x.Amount)
