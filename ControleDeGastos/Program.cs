@@ -1,11 +1,18 @@
 using ExpensesControl.Data.Contexto;
 using ExpensesControl.DependecyInjection;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+if (string.IsNullOrWhiteSpace(connectionString))
+{
+    throw new InvalidOperationException(
+        "Connection string 'DefaultConnection' was not found.");
+}
+
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -13,7 +20,8 @@ builder.Services.AddServicesInjection();
 builder.Services.AddDependencyInjectionRepositories();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseNpgsql(connectionString)
+           .UseSnakeCaseNamingConvention());
 
 builder.Services.AddControllers()
 .ConfigureApiBehaviorOptions(options =>

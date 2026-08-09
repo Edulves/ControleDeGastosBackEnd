@@ -1,15 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿namespace ExpensesControl.Models;
 
-namespace ExpensesControl.Models;
-
-public class TransactionCategory
+public class TransactionCategory : Entity
 {
-    [Key]
-    [Column("id_categoria_de_lancamentos")]
-    public int TransactionCategoriesId { get; set; }
-    [Column("nome_da_categoria")]
-    public string CategoryName { get; set; } = string.Empty;
-    [Column("deletado")]
-    public string Deleted { get; set; } = string.Empty;
+    public int TransactionCategoryId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public ICollection<DailyExpense> DailyExpenses { get; set; } = [];
 }

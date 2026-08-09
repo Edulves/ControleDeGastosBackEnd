@@ -27,7 +27,7 @@ public class ExpensesControlService(IExpensesControlRepository expensesControlRe
             InputDate = x.InputDate,
             ExpenseValue = x.ExpenseValue,
             Note = x.Note,
-            CategoryId = x.CategoryId,
+            TransactionCategoryId = x.CategoryId,
             Deleted = "",
         }).ToList();
 
@@ -54,7 +54,7 @@ public class ExpensesControlService(IExpensesControlRepository expensesControlRe
             InputDate = x.InputDate,
             ExpenseValue = x.ExpenseValue,
             Note = x.Note ?? "",
-            CategoryName = x.Category?.CategoryName ?? "",
+            CategoryName = x.TransactionCategory?.CategoryName ?? "",
         }).ToList();
 
         var PaginatedResult = (DailyExpenseDto, result.totalItems).ToPagedResult(request.Page, request.QTY);
@@ -77,7 +77,7 @@ public class ExpensesControlService(IExpensesControlRepository expensesControlRe
             result.InputDate = item.InputDate == DateTime.MinValue ? result.InputDate : item.InputDate;
             result.ExpenseValue = item.ExpenseValue <= 0 ? result.ExpenseValue : item.ExpenseValue;
             result.Note = string.IsNullOrEmpty(item.Note) ? result.Note : item.Note;
-            result.CategoryId = item.CategoryId <= 0 ? result.CategoryId : item.CategoryId;
+            result.TransactionCategoryId = item.CategoryId <= 0 ? result.TransactionCategoryId : item.CategoryId;
 
             dailyExpenseModel.Add(result);
         }
@@ -244,11 +244,11 @@ public class ExpensesControlService(IExpensesControlRepository expensesControlRe
         if(result.Count <= 0)
             return ResultPattern<DailyExpensesPerCategoryResult>.Failure("No expense found with the current filter");
 
-        var groupedResult = result.GroupBy(x => x.CategoryId);
+        var groupedResult = result.GroupBy(x => x.TransactionCategoryId);
 
         var GastosPorCategoria = groupedResult.Select(x => new GetDailyExpensesByCategoryReponse()
         {
-            CategoryName = x.FirstOrDefault()?.Category?.CategoryName ?? "No category",
+            CategoryName = x.FirstOrDefault()?.TransactionCategory?.CategoryName ?? "No category",
             ExpenseValue = x.Sum(x => x.ExpenseValue),
         }).OrderByDescending(x => x.ExpenseValue).ToList();
 

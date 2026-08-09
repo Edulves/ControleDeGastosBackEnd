@@ -31,7 +31,7 @@ public static class DailyExpensesQueries
         if(string.IsNullOrEmpty(Category))
             return query;
         
-        return query.Where(x => x.Category != null && x.Category.CategoryName.Contains(Category, StringComparison.CurrentCultureIgnoreCase));
+        return query.Where(x => x.TransactionCategory != null && x.TransactionCategory.CategoryName.Contains(Category, StringComparison.CurrentCultureIgnoreCase));
     }
 
     public static IQueryable<DailyExpense> FilterByNote(this IQueryable<DailyExpense> query, string Observacao)

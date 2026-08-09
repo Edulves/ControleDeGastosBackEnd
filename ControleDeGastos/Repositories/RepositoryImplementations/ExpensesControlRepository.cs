@@ -14,13 +14,13 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         #region DailyExpenses
         public IQueryable<DailyExpense> GetDailyExpensesBase(GetDailyExpensesRequest request)
         {
-            return context.gastos_diarios
+            return context.DailyExpenses
             .FilterByCategory(request.Category)
             .FilterByTransactionPeriod(request.BeginningOfPeriod, request.EndOfPeriod)
             .FilterByMonthAndYear(request.Year, request.Month)
             .FilterByNote(request.Note)
             .FilterRemoveDeleted()
-            .Include(x => x.Category)
+            .Include(x => x.TransactionCategory)
             .OrderBy(x => x.InputDate)
             .ThenBy(x => x.DailyExpensesId);
         }
@@ -38,14 +38,14 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         }
         public async Task<DailyExpense?> GetDailyExpensesById(int id)
         {
-            return await context.gastos_diarios.FindAsync(id);
+            return await context.DailyExpenses.FindAsync(id);
         }
         #endregion
 
         #region TransactionCategory
         public IQueryable<TransactionCategory> GetTransactionCategoriesBase()
         {
-            return context.categorias_de_lancamentos.FilterRemoveDeleted();
+            return context.TransactionCategories.FilterRemoveDeleted();
         }
         public async Task<List<TransactionCategory>> GetTransactionCategories()
         {
@@ -53,14 +53,14 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         }
         public async Task<TransactionCategory?> GetTransactionCategoryById(int id)
         {
-            return await context.categorias_de_lancamentos.FindAsync(id);
+            return await context.TransactionCategories.FindAsync(id);
         }
         #endregion
 
         #region FixedExpenses
         public IQueryable<FixedExpense> GetFixedExpensesBase(GetFixedExpensesRequest request)
         {
-            return context.gastos_fixos
+            return context.FixedExpenses
             .FilterRemoveDeleteds()
             .FilterByDescription(request.ExpenseDescription)
             .FilterByMonthAndYear(request.Year, request.Month)
@@ -82,7 +82,7 @@ namespace ExpensesControl.Repositories.RepositoriesImplementation
         }
         public async Task<FixedExpense?> GetFixedExpensesById(int id)
         {
-            return await context.gastos_fixos.FindAsync(id);
+            return await context.FixedExpenses.FindAsync(id);
         }
         #endregion
     }
