@@ -7,6 +7,9 @@ public static class DependencyInjectionServices
 {
     public static void AddServicesInjection(this IServiceCollection services)
     {
-        services.AddScoped<IExpensesControlService, ExpensesControlService>();
+        services.AddScoped<IConsolidationService, ConsolidationService>();
+        services.AddScoped<IDailyExpensesService, DailyExpensesService>();
+        services.AddScoped<IFixedExpensesService, FixedExpensesService>();
+        services.AddScoped<ITransactionCategoriesService, TransactionCategoriesService>();
     }
 }

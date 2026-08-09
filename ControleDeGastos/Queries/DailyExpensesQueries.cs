@@ -25,7 +25,6 @@ public static class DailyExpensesQueries
 
         return query.Where(x => x.CreatedAt.Date >= beginningOfPeriod.Date && x.CreatedAt.Date <= endOfPeriod.Date);
     }
-
     public static IQueryable<DailyExpense> FilterByCategory(this IQueryable<DailyExpense> query, string Category)
     {
         if(string.IsNullOrEmpty(Category))
@@ -33,7 +32,6 @@ public static class DailyExpensesQueries
         
         return query.Where(x => x.TransactionCategory != null && x.TransactionCategory.Name.Contains(Category, StringComparison.CurrentCultureIgnoreCase));
     }
-
     public static IQueryable<DailyExpense> FilterByNote(this IQueryable<DailyExpense> query, string Observacao)
     {
         if (string.IsNullOrEmpty(Observacao))

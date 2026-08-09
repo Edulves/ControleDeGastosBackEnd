@@ -3,13 +3,13 @@ using ExpensesControl.Data.PaginatedResult.Extentions;
 using ExpensesControl.Data.ResultPattern.Base;
 using ExpensesControl.DTOs.Requests.FixedExpensesRequests;
 using ExpensesControl.Models;
-using ExpensesControl.Repositories.InterfaceRepositories;
 using ExpensesControl.Repositories.RepositoriesInterface;
+using ExpensesControl.Repositories.RepositoryInterfaces;
 using ExpensesControl.Service.ServiceInterfaces;
 
 namespace ExpensesControl.Service.ServiceImplementations;
 
-public class FixedExpensesService(IExpensesControlRepository expensesControlRepository, IGenericOperationsRepository GenericOperationsRepository) : IFixedExpensesService
+public class FixedExpensesService(IGenericOperationsRepository GenericOperationsRepository, IFixedExpensesRepository fixedExpensesRepository) : IFixedExpensesService
 {
     public async Task<ResultPattern<PagedResult<FixedExpense>>> GetFixedExpensesAsync(GetFixedExpensesRequest request)
     {
@@ -19,7 +19,7 @@ public class FixedExpensesService(IExpensesControlRepository expensesControlRepo
         if (request.Page < 1)
             return ResultPattern<PagedResult<FixedExpense>>.Failure("Page cannot be smaller than 1");
 
-        var (items, totalItems) = await expensesControlRepository.GetFixedExpenses(request);
+        var (items, totalItems) = await fixedExpensesRepository.GetFixedExpenses(request);
 
         var respostaPaginada = (items, totalItems).ToPagedResult(request.Page, request.QTY);
 
@@ -54,7 +54,7 @@ public class FixedExpensesService(IExpensesControlRepository expensesControlRepo
 
         foreach (var item in request)
         {
-            var result = await expensesControlRepository.GetFixedExpensesById(item.FixedExpensesId);
+            var result = await fixedExpensesRepository.GetFixedExpensesById(item.FixedExpensesId);
             if (result == null)
             {
                 FixedExpenseModel.Add(new FixedExpense()
@@ -81,7 +81,7 @@ public class FixedExpensesService(IExpensesControlRepository expensesControlRepo
     }
     public async Task<ResultPattern<string>> DeleteFixedExpensesAsync(int id)
     {
-        var result = await expensesControlRepository.GetFixedExpensesById(id);
+        var result = await fixedExpensesRepository.GetFixedExpensesById(id);
 
         if (result == null)
             return ResultPattern<string>.Failure($"Not entry for id: {id}");

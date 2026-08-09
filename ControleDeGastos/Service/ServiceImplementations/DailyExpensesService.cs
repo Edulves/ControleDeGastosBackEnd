@@ -1,14 +1,16 @@
 ﻿using ExpensesControl.Data.PaginatedResult;
+using ExpensesControl.Data.PaginatedResult.Extentions;
 using ExpensesControl.Data.ResultPattern.Base;
 using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
 using ExpensesControl.DTOs.Responses.DailyExpensesReponses;
 using ExpensesControl.Models;
 using ExpensesControl.Repositories.RepositoriesInterface;
+using ExpensesControl.Repositories.RepositoryInterfaces;
 using ExpensesControl.Service.ServiceInterfaces;
 
 namespace ExpensesControl.Service.ServiceImplementations;
 
-public class DailyExpensesService(IGenericOperationsRepository GenericOperationsRepository) : IDailyExpensesService
+public class DailyExpensesService(IGenericOperationsRepository GenericOperationsRepository, IDailyExpensesRepository dailyExpensesRepository) : IDailyExpensesService
 {
     public async Task<ResultPattern<string>> CreateDailyExpensesEntriesAsync(List<DailyExpenseEntryRequest> request)
     {
@@ -36,7 +38,7 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
         if (request.Page < 1)
             return ResultPattern<PagedResult<DailyExpenseResponse>>.Failure("Page cannot be smaller than 1");
 
-        var result = await expensesControlRepository.GetDailyExpensesPaginated(request);
+        var result = await dailyExpensesRepository.GetDailyExpensesPaginated(request);
 
         if (result.items.Count <= 0)
             return ResultPattern<PagedResult<DailyExpenseResponse>>.Failure("No expense was found");
@@ -63,7 +65,7 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
 
         foreach (var item in request)
         {
-            var result = await expensesControlRepository.GetDailyExpensesById(item.DailyExpenseId);
+            var result = await dailyExpensesRepository.GetDailyExpensesById(item.DailyExpenseId);
             if (result == null)
                 return ResultPattern<string>.Failure($"Expense of id: {item.DailyExpenseId} was not found");
 
@@ -81,7 +83,7 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
     }
     public async Task<ResultPattern<string>> DeleteDailyExpenseEntryByIdAsync(int id)
     {
-        var entryForFakeDelete = await expensesControlRepository.GetDailyExpensesById(id);
+        var entryForFakeDelete = await dailyExpensesRepository.GetDailyExpensesById(id);
 
         if (entryForFakeDelete == null)
             return ResultPattern<string>.Failure($"No expense of id: {id} was found");

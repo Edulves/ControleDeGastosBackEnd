@@ -3,12 +3,12 @@ using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
 using ExpensesControl.DTOs.Requests.DataConsolidationRequests;
 using ExpensesControl.DTOs.Requests.FixedExpensesRequests;
 using ExpensesControl.DTOs.Responses.DataConsolidationResponses;
-using ExpensesControl.Repositories.InterfaceRepositories;
+using ExpensesControl.Repositories.RepositoryInterfaces;
 using ExpensesControl.Service.ServiceInterfaces;
 
 namespace ExpensesControl.Service.ServiceImplementations;
 
-public class ConsolidationService(IExpensesControlRepository expensesControlRepository) : IConsolidationService
+public class ConsolidationService(IDailyExpensesRepository DailyexpensesRepository, IFixedExpensesRepository fixedExpensesRepository) : IConsolidationService
 {
     public async Task<ResultPattern<DailyExpensesPerCategoryResult>> GetExpensesSumPerCategoryAsync(GetByFullDateOrMothAndYearRequest request)
     {
@@ -20,7 +20,7 @@ public class ConsolidationService(IExpensesControlRepository expensesControlRepo
             Month = request.Month
         };
 
-        var result = await expensesControlRepository.GetListDailyExpenses(filtro);
+        var result = await DailyexpensesRepository.GetListDailyExpenses(filtro);
 
         if (result.Count <= 0)
             return ResultPattern<DailyExpensesPerCategoryResult>.Failure("No expense found with the current filter");
@@ -48,7 +48,7 @@ public class ConsolidationService(IExpensesControlRepository expensesControlRepo
             Month = request.Month
         };
 
-        var result = await expensesControlRepository.GetListDailyExpenses(filter);
+        var result = await DailyexpensesRepository.GetListDailyExpenses(filter);
 
         if (result.Count <= 0)
             return ResultPattern<DailyExpensesConsolidationResult>.Failure("No daily expense found");
@@ -76,7 +76,7 @@ public class ConsolidationService(IExpensesControlRepository expensesControlRepo
             Month = request.Month,
         };
 
-        var consultaGastosFixos = await expensesControlRepository.GetFixedExpensesList(filter);
+        var consultaGastosFixos = await fixedExpensesRepository.GetFixedExpensesList(filter);
 
         if (consultaGastosFixos.Count <= 0)
             return ResultPattern<TotalFixedExpensesComparasionResponse>.Failure("No fixed expense found");
@@ -98,7 +98,7 @@ public class ConsolidationService(IExpensesControlRepository expensesControlRepo
             Month = request.Month,
         };
 
-        var dailyExpensesSum = await expensesControlRepository.GetDailyExpensesSum(filter);
+        var dailyExpensesSum = await DailyexpensesRepository.GetDailyExpensesSum(filter);
 
         var totalExpnesesResponse = new TotalExpensesResponse() { TotalExpenses = dailyExpensesSum };
 

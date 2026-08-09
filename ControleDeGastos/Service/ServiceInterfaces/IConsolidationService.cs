@@ -1,6 +1,8 @@
 ﻿using ExpensesControl.Data.ResultPattern.Base;
+using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
 using ExpensesControl.DTOs.Requests.DataConsolidationRequests;
 using ExpensesControl.DTOs.Responses.DataConsolidationResponses;
+using ExpensesControl.Models;
 
 namespace ExpensesControl.Service.ServiceInterfaces;
 

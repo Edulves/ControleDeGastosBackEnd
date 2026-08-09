@@ -1,17 +1,17 @@
 ﻿using ExpensesControl.Data.ResultPattern.Base;
 using ExpensesControl.DTOs.Requests.CategoriesRequests;
 using ExpensesControl.Models;
-using ExpensesControl.Repositories.InterfaceRepositories;
 using ExpensesControl.Repositories.RepositoriesInterface;
+using ExpensesControl.Repositories.RepositoryInterfaces;
 using ExpensesControl.Service.ServiceInterfaces;
 
 namespace ExpensesControl.Service.ServiceImplementations;
 
-public class TransactionCategoriesService(IExpensesControlRepository expensesControlRepository, IGenericOperationsRepository GenericOperationsRepository) : ITransactionCategoriesService
+public class TransactionCategoriesService(IGenericOperationsRepository GenericOperationsRepository, ITransactionCategoriesRepository transactionCategoriesRepository) : ITransactionCategoriesService
 {
     public async Task<ResultPattern<List<TransactionCategory>>> GetEntryCategoriesAsync()
     {
-        var result = await expensesControlRepository.GetTransactionCategories();
+        var result = await transactionCategoriesRepository.GetTransactionCategories();
 
         return ResultPattern<List<TransactionCategory>>.Success(result);
     }
@@ -39,7 +39,7 @@ public class TransactionCategoriesService(IExpensesControlRepository expensesCon
     }
     public async Task<ResultPattern<string>> DeleteCategoryByIdAsync(int id)
     {
-        var result = await expensesControlRepository.GetTransactionCategoryById(id);
+        var result = await transactionCategoriesRepository.GetTransactionCategoryById(id);
 
         if (result == null)
             return ResultPattern<string>.Failure($"No category found with id: {id}");
