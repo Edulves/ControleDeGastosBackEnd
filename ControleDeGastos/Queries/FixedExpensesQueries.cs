@@ -8,22 +8,22 @@ public static class FixedExpensesQueries
     {
         return query.Where(x => x.IsDeleted != true);
     }
-    public static IQueryable<FixedExpense> FilterByPeriod(this IQueryable<FixedExpense> query, DateTime beginningOfPeriod, DateTime endOfPeriod)
+    public static IQueryable<FixedExpense> FilterByPeriod(this IQueryable<FixedExpense> query, DateOnly beginningOfPeriod, DateOnly endOfPeriod)
     {
-        if(beginningOfPeriod == DateTime.MinValue || endOfPeriod == DateTime.MinValue) 
+        if(beginningOfPeriod == DateOnly.MinValue || endOfPeriod == DateOnly.MinValue) 
             return query;
 
-        if (beginningOfPeriod.Date > endOfPeriod.Date)
+        if (beginningOfPeriod > endOfPeriod)
             return query;
 
-        return query.Where(x => x.CreatedAt.Date >= beginningOfPeriod && x.CreatedAt.Date  <= endOfPeriod);
+        return query.Where(x => x.FixedExpenseDate >= beginningOfPeriod && x.FixedExpenseDate  <= endOfPeriod);
     }
     public static IQueryable<FixedExpense> FilterByMonthAndYear(this IQueryable<FixedExpense> query, int year, int month)
     {
         if (year == 0 || month == 0)
             return query;
 
-        return query.Where(x => x.CreatedAt.Year == year && x.CreatedAt.Month == month);
+        return query.Where(x => x.FixedExpenseDate.Year == year && x.FixedExpenseDate.Month == month);
     }
     public static IQueryable<FixedExpense> FilterByDescription(this IQueryable<FixedExpense> query, string description)
     {

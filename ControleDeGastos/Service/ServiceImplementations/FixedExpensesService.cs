@@ -27,18 +27,17 @@ public class FixedExpensesService(IGenericOperationsRepository GenericOperations
     }
     public async Task<ResultPattern<string>> PostFixedExpenseAsync(List<PostFixedExpensesDto> request)
     {
-
         var fixedExpenseModel = request.Select(x => new FixedExpense
         {
             Description = x.Description,
             Amount = x.Amount,
-            CreatedAt = x.CreatedAt
+            FixedExpenseDate = x.FixedExpenseDate
         }).ToList();
 
         foreach (var item in fixedExpenseModel)
         {
-            if (item.CreatedAt == DateTime.MinValue)
-                return ResultPattern<string>.Failure($"Invalid date {item.CreatedAt}", "Invalid date");
+            if (item.FixedExpenseDate == DateOnly.MinValue)
+                return ResultPattern<string>.Failure($"Invalid date {item.FixedExpenseDate}", "Invalid date");
         }
 
         await GenericOperationsRepository.CreateAsync(fixedExpenseModel);
@@ -61,7 +60,7 @@ public class FixedExpensesService(IGenericOperationsRepository GenericOperations
                 {
                     Description = item.Description,
                     Amount = item.Amount,
-                    CreatedAt = item.CreatedAt
+                    FixedExpenseDate = item.FixedExpenseDate
                 });
 
                 continue;
@@ -70,7 +69,7 @@ public class FixedExpensesService(IGenericOperationsRepository GenericOperations
             result.Description = string.IsNullOrEmpty(item.Description) ? result.Description : item.Description;
             result.Amount = item.Amount <= 0 ? result.Amount : item.Amount;
             result.IsPaid = item.IsPaid;
-            result.CreatedAt = item.CreatedAt == DateTime.MinValue ? result.CreatedAt : item.CreatedAt;
+            result.FixedExpenseDate = item.FixedExpenseDate == DateOnly.MinValue ? result.FixedExpenseDate : item.FixedExpenseDate;
 
             FixedExpenseModel.Add(result);
         }

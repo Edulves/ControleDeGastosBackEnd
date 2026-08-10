@@ -9,5 +9,5 @@ public class PutFixedExpensesRequest
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; } = 0;
     public bool IsPaid { get; set; } = false;
-    public DateTime CreatedAt { get; set; } = DateTime.MinValue;
+    public DateOnly FixedExpenseDate { get; set; } = DateOnly.MinValue;
 }

@@ -10,6 +10,6 @@ namespace ExpensesControl.DTOs.Requests.FixedExpensesRequests
         [Required]
         public decimal Amount { get; set; }
         [Required]
-        public DateTime CreatedAt { get; set; }
+        public DateOnly FixedExpenseDate { get; set; }
     }
 }
