@@ -1,4 +1,4 @@
-﻿using ExpensesControl.Data.Contexto;
+﻿using ExpensesControl.Data.Context;
 using ExpensesControl.Models;
 using ExpensesControl.Queries;
 using ExpensesControl.Repositories.RepositoryInterfaces;

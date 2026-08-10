@@ -1,4 +1,4 @@
-﻿using ExpensesControl.Data.Contexto;
+﻿using ExpensesControl.Data.Context;
 using ExpensesControl.Repositories.RepositoriesInterface;
 
 namespace ExpensesControl.Repositories.RepositoriesImplementation

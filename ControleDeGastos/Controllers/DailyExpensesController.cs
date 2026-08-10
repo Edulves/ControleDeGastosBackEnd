@@ -3,12 +3,14 @@ using ExpensesControl.Data.ResultPattern.Extensions;
 using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
 using ExpensesControl.DTOs.Responses.DailyExpensesReponses;
 using ExpensesControl.Service.ServiceInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensesControl.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class DailyExpensesController(IDailyExpensesService expensesControlService) : ControllerBase
     {
         private readonly IDailyExpensesService _expensesControlService = expensesControlService;

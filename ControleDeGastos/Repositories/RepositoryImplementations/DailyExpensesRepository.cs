@@ -1,4 +1,4 @@
-﻿using ExpensesControl.Data.Contexto;
+﻿using ExpensesControl.Data.Context;
 using ExpensesControl.Data.PaginatedResult.Extentions;
 using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
 using ExpensesControl.Models;

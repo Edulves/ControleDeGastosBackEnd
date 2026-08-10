@@ -2,12 +2,14 @@ using ExpensesControl.Data.ResultPattern.Extensions;
 using ExpensesControl.DTOs.Requests.CategoriesRequests;
 using ExpensesControl.Models;
 using ExpensesControl.Service.ServiceInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensesControl.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class TransactionCategoriesController(ITransactionCategoriesService expensesControlService) : ControllerBase
     {
         private readonly ITransactionCategoriesService _expensesControlService = expensesControlService;

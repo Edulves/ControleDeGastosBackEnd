@@ -2,12 +2,14 @@ using ExpensesControl.Data.ResultPattern.Extensions;
 using ExpensesControl.DTOs.Requests.DataConsolidationRequests;
 using ExpensesControl.DTOs.Responses.DataConsolidationResponses;
 using ExpensesControl.Service.ServiceInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensesControl.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class DataConsolidationController(IConsolidationService expensesControlService) : ControllerBase
     {
         private readonly IConsolidationService _expensesControlService = expensesControlService;

@@ -2,12 +2,14 @@ using ExpensesControl.Data.ResultPattern.Extensions;
 using ExpensesControl.DTOs.Requests.FixedExpensesRequests;
 using ExpensesControl.Models;
 using ExpensesControl.Service.ServiceInterfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpensesControl.Controllers
 {
     [Route("[controller]")]
     [ApiController]
+    [Authorize]
     public class FixedExpensesController(IFixedExpensesService expensesControlService) : ControllerBase
     {
         private readonly IFixedExpensesService _expensesControlService = expensesControlService;
