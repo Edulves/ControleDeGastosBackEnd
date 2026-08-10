@@ -19,7 +19,7 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
 
         var dailyExpenseModel = request.Select(x => new DailyExpense
         {
-            CreatedAt = x.CreatedAt,
+            ExpenseDate = x.ExpenseDate,
             Amount = x.Amount,
             Note = x.Note,
             TransactionCategoryId = x.CategoryId,

@@ -8,7 +8,7 @@ namespace ExpensesControl.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class CategoriesController(ITransactionCategoriesService expensesControlService) : ControllerBase
+    public class TransactionCategoriesController(ITransactionCategoriesService expensesControlService) : ControllerBase
     {
         private readonly ITransactionCategoriesService _expensesControlService = expensesControlService;
     
