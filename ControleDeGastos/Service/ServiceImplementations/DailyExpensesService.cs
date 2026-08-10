@@ -69,7 +69,7 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
             if (result == null)
                 return ResultPattern<string>.Failure($"Expense of id: {item.DailyExpenseId} was not found");
 
-            result.CreatedAt = item.InputDate == DateTime.MinValue ? result.CreatedAt : item.InputDate;
+            result.ExpenseDate = item.ExpenseDate == DateOnly.MinValue ? result.ExpenseDate : item.ExpenseDate;
             result.Amount = item.ExpenseValue <= 0 ? result.Amount : item.ExpenseValue;
             result.Note = string.IsNullOrEmpty(item.Note) ? result.Note : item.Note;
             result.TransactionCategoryId = item.CategoryId <= 0 ? result.TransactionCategoryId : item.CategoryId;
