@@ -13,17 +13,17 @@ public static class DailyExpensesQueries
         if (year == 0 || month == 0)
             return query;
         
-        return query.Where(x => x.CreatedAt.Year == year && x.CreatedAt.Month == month);
+        return query.Where(x => x.ExpenseDate.Year == year && x.ExpenseDate.Month == month);
     }
-    public static IQueryable<DailyExpense> FilterByTransactionPeriod(this IQueryable<DailyExpense> query, DateTime beginningOfPeriod, DateTime endOfPeriod)
+    public static IQueryable<DailyExpense> FilterByTransactionPeriod(this IQueryable<DailyExpense> query, DateOnly beginningOfPeriod, DateOnly endOfPeriod)
     {
-        if (beginningOfPeriod == DateTime.MinValue || endOfPeriod == DateTime.MinValue)
+        if (beginningOfPeriod == DateOnly.MinValue || endOfPeriod == DateOnly.MinValue)
             return query;
 
         if(endOfPeriod < beginningOfPeriod)
             return query;
 
-        return query.Where(x => x.CreatedAt.Date >= beginningOfPeriod.Date && x.CreatedAt.Date <= endOfPeriod.Date);
+        return query.Where(x => x.ExpenseDate >= beginningOfPeriod && x.ExpenseDate <= endOfPeriod);
     }
     public static IQueryable<DailyExpense> FilterByCategory(this IQueryable<DailyExpense> query, string Category)
     {

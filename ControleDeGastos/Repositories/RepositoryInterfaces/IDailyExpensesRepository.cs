@@ -5,8 +5,8 @@ namespace ExpensesControl.Repositories.RepositoryInterfaces;
 
 public interface IDailyExpensesRepository
 {
-    Task<(List<DailyExpense> items, int totalItems)> GetDailyExpensesPaginated(GetDailyExpensesRequest GetDailyExpenses);
-    Task<List<DailyExpense>> GetListDailyExpenses(GetDailyExpensesRequest requisicao);
+    Task<(List<DailyExpense> items, int totalItems)> GetDailyExpensesPaginated(DailyExpensesRequest GetDailyExpenses);
+    Task<List<DailyExpense>> GetListDailyExpenses(DailyExpensesRequest requisicao);
     Task<DailyExpense?> GetDailyExpensesById(int id);
-    Task<decimal> GetDailyExpensesSum(GetDailyExpensesRequest requisicao);
+    Task<decimal> GetDailyExpensesSum(DailyExpensesRequest requisicao);
 }

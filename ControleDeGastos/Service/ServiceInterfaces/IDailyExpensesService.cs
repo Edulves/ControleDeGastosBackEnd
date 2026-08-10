@@ -8,7 +8,7 @@ namespace ExpensesControl.Service.ServiceInterfaces;
 public interface IDailyExpensesService
 {
     Task<ResultPattern<string>> CreateDailyExpensesEntriesAsync(List<DailyExpenseEntryRequest> requisicao);
-    Task<ResultPattern<PagedResult<DailyExpenseResponse>>> GetDailyExpensesAsync(GetDailyExpensesRequest requisicao);
+    Task<ResultPattern<PagedResult<DailyExpenseResponse>>> GetDailyExpensesAsync(DailyExpensesRequest requisicao);
     Task<ResultPattern<string>> UpdateDailyExpensesEntriesAsync(List<PutDailyExpensesRequest> requisicao);
     Task<ResultPattern<string>> DeleteDailyExpenseEntryByIdAsync(int id);
 }

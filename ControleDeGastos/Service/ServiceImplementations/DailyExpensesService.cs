@@ -30,7 +30,7 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
 
         return ResultPattern<string>.Success("Expense was registered!");
     }
-    public async Task<ResultPattern<PagedResult<DailyExpenseResponse>>> GetDailyExpensesAsync(GetDailyExpensesRequest request)
+    public async Task<ResultPattern<PagedResult<DailyExpenseResponse>>> GetDailyExpensesAsync(DailyExpensesRequest request)
     {
         if (request.BeginningOfPeriod > request.EndOfPeriod)
             return ResultPattern<PagedResult<DailyExpenseResponse>>.Failure("The start period cannot be latter than the end period");
@@ -38,21 +38,21 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
         if (request.Page < 1)
             return ResultPattern<PagedResult<DailyExpenseResponse>>.Failure("Page cannot be smaller than 1");
 
-        var result = await dailyExpensesRepository.GetDailyExpensesPaginated(request);
+        var (items, totalItems) = await dailyExpensesRepository.GetDailyExpensesPaginated(request);
 
-        if (result.items.Count <= 0)
+        if (items.Count <= 0)
             return ResultPattern<PagedResult<DailyExpenseResponse>>.Failure("No expense was found");
 
-        var DailyExpenseDto = result.items.Select(x => new DailyExpenseResponse
+        var DailyExpenseDto = items.Select(x => new DailyExpenseResponse
         {
             DailyExpenseId = x.DailyExpenseId,
-            InputDate = x.CreatedAt,
+            ExpenseDate = x.ExpenseDate,
             ExpenseValue = x.Amount,
             Note = x.Note ?? "",
             CategoryName = x.TransactionCategory?.Name ?? "",
         }).ToList();
 
-        var PaginatedResult = (DailyExpenseDto, result.totalItems).ToPagedResult(request.Page, request.QTY);
+        var PaginatedResult = (DailyExpenseDto, totalItems).ToPagedResult(request.Page, request.QTY);
 
         return ResultPattern<PagedResult<DailyExpenseResponse>>.Success(PaginatedResult);
     }

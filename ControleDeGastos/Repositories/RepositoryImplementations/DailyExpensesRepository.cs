@@ -10,7 +10,7 @@ namespace ExpensesControl.Repositories.RepositoryImplementations;
 
 public class DailyExpensesRepository(AppDbContext context) : IDailyExpensesRepository
 {
-    public IQueryable<DailyExpense> GetDailyExpensesBase(GetDailyExpensesRequest request)
+    public IQueryable<DailyExpense> GetDailyExpensesBase(DailyExpensesRequest request)
     {
         return context.DailyExpenses
             .FilterByCategory(request.Category)
@@ -22,15 +22,15 @@ public class DailyExpensesRepository(AppDbContext context) : IDailyExpensesRepos
             .OrderBy(x => x.CreatedAt)
             .ThenBy(x => x.DailyExpenseId);
     }
-    public async Task<decimal> GetDailyExpensesSum(GetDailyExpensesRequest request)
+    public async Task<decimal> GetDailyExpensesSum(DailyExpensesRequest request)
     {
         return await GetDailyExpensesBase(request).SumAsync(x => x.Amount);
     }
-    public async Task<List<DailyExpense>> GetListDailyExpenses(GetDailyExpensesRequest request)
+    public async Task<List<DailyExpense>> GetListDailyExpenses(DailyExpensesRequest request)
     {
         return await GetDailyExpensesBase(request).ToListAsync();
     }
-    public async Task<(List<DailyExpense> items, int totalItems)> GetDailyExpensesPaginated(GetDailyExpensesRequest request)
+    public async Task<(List<DailyExpense> items, int totalItems)> GetDailyExpensesPaginated(DailyExpensesRequest request)
     {
         return await GetDailyExpensesBase(request).PaginateAsync(request.Page, request.QTY);
     }

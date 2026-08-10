@@ -12,7 +12,7 @@ public class ConsolidationService(IDailyExpensesRepository DailyexpensesReposito
 {
     public async Task<ResultPattern<DailyExpensesPerCategoryResult>> GetExpensesSumPerCategoryAsync(GetByFullDateOrMothAndYearRequest request)
     {
-        var filtro = new GetDailyExpensesRequest()
+        var filtro = new DailyExpensesRequest()
         {
             BeginningOfPeriod = request.BeginningOfPeriod,
             EndOfPeriod = request.EndOfPeriod,
@@ -42,7 +42,7 @@ public class ConsolidationService(IDailyExpensesRepository DailyexpensesReposito
 
     public async Task<ResultPattern<DailyExpensesConsolidationResult>> GetExpensesSumPerDayAsync(ExpensesByMothAndYearRequest request)
     {
-        var filter = new GetDailyExpensesRequest()
+        var filter = new DailyExpensesRequest()
         {
             Year = request.Year,
             Month = request.Month
@@ -92,7 +92,7 @@ public class ConsolidationService(IDailyExpensesRepository DailyexpensesReposito
 
     public async Task<ResultPattern<TotalExpensesResponse>> GetTotalDailyExpensesAsync(ExpensesByMothAndYearRequest request)
     {
-        var filter = new GetDailyExpensesRequest()
+        var filter = new DailyExpensesRequest()
         {
             Year = request.Year,
             Month = request.Month,
