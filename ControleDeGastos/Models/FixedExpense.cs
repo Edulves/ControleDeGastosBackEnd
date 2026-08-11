@@ -1,4 +1,6 @@
-﻿namespace ExpensesControl.Models;
+﻿using Microsoft.AspNetCore.Identity;
+
+namespace ExpensesControl.Models;
 
 public class FixedExpense : Entity
 {
@@ -6,5 +8,7 @@ public class FixedExpense : Entity
     public string Description { get; set; } = string.Empty;
     public decimal Amount { get; set; }
     public bool IsPaid { get; set; } = false;
-    public DateOnly FixedExpenseDate { get; set; } 
+    public DateOnly FixedExpenseDate { get; set; }
+    public string UserId { get; set; } = string.Empty;
+    public IdentityUser User { get; set; } = null!;
 }

@@ -26,5 +26,10 @@ public class DailyExpenseConfiguration: IEntityTypeConfiguration<DailyExpense>
             .WithMany(x => x.DailyExpenses)
             .HasForeignKey(x => x.TransactionCategoryId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

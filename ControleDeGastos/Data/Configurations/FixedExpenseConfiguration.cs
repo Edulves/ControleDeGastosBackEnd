@@ -25,5 +25,10 @@ public class FixedExpenseConfiguration : IEntityTypeConfiguration<FixedExpense>
 
         builder.Property(x => x.IsDeleted)
             .HasDefaultValue(false);
+
+        builder.HasOne(x => x.User)
+            .WithMany()
+            .HasForeignKey(x => x.UserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
