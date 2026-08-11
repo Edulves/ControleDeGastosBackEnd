@@ -4,19 +4,22 @@ using ExpensesControl.DTOs.Requests.FixedExpensesRequests;
 using ExpensesControl.Models;
 using ExpensesControl.Queries;
 using ExpensesControl.Repositories.RepositoryInterfaces;
+using ExpensesControl.Service.ServiceInterfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExpensesControl.Repositories.RepositoryImplementations;
 
-public class FixedExpensesRepository(AppDbContext context) : IFixedExpensesRepository
+public class FixedExpensesRepository(AppDbContext context, ICurrentUserService _currentUser) : IFixedExpensesRepository
 {
     public IQueryable<FixedExpense> GetFixedExpensesBase(GetFixedExpensesRequest request)
     {
         return context.FixedExpenses
+        .FilterByUserId(_currentUser.UserId!)
         .FilterRemoveDeleteds()
         .FilterByDescription(request.ExpenseDescription)
         .FilterByMonthAndYear(request.Year, request.Month)
         .FilterByPeriod(request.BeginningOfPeriod, request.EndOfPeriod)
+        .Include(x => x.User)
         .OrderBy(x => x.CreatedAt)
         .ThenBy(x => x.FixedExpenseId);
     }

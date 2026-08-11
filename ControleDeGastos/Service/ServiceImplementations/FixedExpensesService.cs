@@ -9,7 +9,7 @@ using ExpensesControl.Service.ServiceInterfaces;
 
 namespace ExpensesControl.Service.ServiceImplementations;
 
-public class FixedExpensesService(IGenericOperationsRepository GenericOperationsRepository, IFixedExpensesRepository fixedExpensesRepository) : IFixedExpensesService
+public class FixedExpensesService(IGenericOperationsRepository GenericOperationsRepository, IFixedExpensesRepository fixedExpensesRepository, ICurrentUserService currentUser) : IFixedExpensesService
 {
     public async Task<ResultPattern<PagedResult<FixedExpense>>> GetFixedExpensesAsync(GetFixedExpensesRequest request)
     {
@@ -31,7 +31,8 @@ public class FixedExpensesService(IGenericOperationsRepository GenericOperations
         {
             Description = x.Description,
             Amount = x.Amount,
-            FixedExpenseDate = x.FixedExpenseDate
+            FixedExpenseDate = x.FixedExpenseDate,
+            UserId = currentUser.UserId!
         }).ToList();
 
         foreach (var item in fixedExpenseModel)
@@ -66,6 +67,9 @@ public class FixedExpensesService(IGenericOperationsRepository GenericOperations
                 continue;
             }
 
+            if(result.UserId != currentUser.UserId)
+                return ResultPattern<string>.Failure($"User not allow to change this entry");
+
             result.Description = string.IsNullOrEmpty(item.Description) ? result.Description : item.Description;
             result.Amount = item.Amount <= 0 ? result.Amount : item.Amount;
             result.IsPaid = item.IsPaid;
@@ -84,6 +88,9 @@ public class FixedExpensesService(IGenericOperationsRepository GenericOperations
 
         if (result == null)
             return ResultPattern<string>.Failure($"Not entry for id: {id}");
+
+        if (result.UserId != currentUser.UserId)
+            return ResultPattern<string>.Failure($"User not allow to change this entry");
 
         result.IsDeleted = true;
 

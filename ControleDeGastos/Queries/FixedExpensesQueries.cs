@@ -4,6 +4,14 @@ namespace ExpensesControl.Queries;
 
 public static class FixedExpensesQueries
 {
+
+    public static IQueryable<FixedExpense> FilterByUserId(this IQueryable<FixedExpense> query, string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return query;
+
+        return query.Where(x => x.UserId == id);
+    }
     public static IQueryable<FixedExpense> FilterRemoveDeleteds(this IQueryable<FixedExpense> query)
     {
         return query.Where(x => x.IsDeleted != true);

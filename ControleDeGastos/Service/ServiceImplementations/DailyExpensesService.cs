@@ -19,9 +19,6 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
         if (request.Count <= 0)
             return ResultPattern<string>.Failure("request is empty");
 
-        if (string.IsNullOrWhiteSpace(currentUser.UserId))
-            return ResultPattern<string>.Failure("User not authenticated");
-
         var dailyExpenseModel = request.Select(x => new DailyExpense
         {
             ExpenseDate = x.ExpenseDate,
@@ -29,7 +26,7 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
             Note = x.Note,
             TransactionCategoryId = x.CategoryId,
             IsDeleted = false,
-            UserId = currentUser.UserId
+            UserId = currentUser.UserId!
         }).ToList();
 
         await GenericOperationsRepository.CreateAsync(dailyExpenseModel);
