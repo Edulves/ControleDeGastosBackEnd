@@ -1,4 +1,6 @@
-﻿using ExpensesControl.Data.PaginatedResult;
+﻿using DocumentFormat.OpenXml.Spreadsheet;
+using DocumentFormat.OpenXml.Vml.Office;
+using ExpensesControl.Data.PaginatedResult;
 using ExpensesControl.Data.PaginatedResult.Extentions;
 using ExpensesControl.Data.ResultPattern.Base;
 using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
@@ -10,12 +12,15 @@ using ExpensesControl.Service.ServiceInterfaces;
 
 namespace ExpensesControl.Service.ServiceImplementations;
 
-public class DailyExpensesService(IGenericOperationsRepository GenericOperationsRepository, IDailyExpensesRepository dailyExpensesRepository) : IDailyExpensesService
+public class DailyExpensesService(IGenericOperationsRepository GenericOperationsRepository, IDailyExpensesRepository dailyExpensesRepository, ICurrentUserService currentUser) : IDailyExpensesService
 {
     public async Task<ResultPattern<string>> CreateDailyExpensesEntriesAsync(List<DailyExpenseEntryRequest> request)
     {
         if (request.Count <= 0)
             return ResultPattern<string>.Failure("request is empty");
+
+        if (string.IsNullOrWhiteSpace(currentUser.UserId))
+            return ResultPattern<string>.Failure("User not authenticated");
 
         var dailyExpenseModel = request.Select(x => new DailyExpense
         {
@@ -24,6 +29,7 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
             Note = x.Note,
             TransactionCategoryId = x.CategoryId,
             IsDeleted = false,
+            UserId = currentUser.UserId
         }).ToList();
 
         await GenericOperationsRepository.CreateAsync(dailyExpenseModel);
@@ -50,6 +56,8 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
             ExpenseValue = x.Amount,
             Note = x.Note ?? "",
             CategoryName = x.TransactionCategory?.Name ?? "",
+            UserId = x.UserId,
+            User = x.User!
         }).ToList();
 
         var PaginatedResult = (DailyExpenseDto, totalItems).ToPagedResult(request.Page, request.QTY);
@@ -69,6 +77,9 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
             if (result == null)
                 return ResultPattern<string>.Failure($"Expense of id: {item.DailyExpenseId} was not found");
 
+            if(result.UserId != currentUser.UserId)
+                return ResultPattern<string>.Failure($"User not allow to change this entry");
+
             result.ExpenseDate = item.ExpenseDate == DateOnly.MinValue ? result.ExpenseDate : item.ExpenseDate;
             result.Amount = item.ExpenseValue <= 0 ? result.Amount : item.ExpenseValue;
             result.Note = string.IsNullOrEmpty(item.Note) ? result.Note : item.Note;
@@ -87,6 +98,9 @@ public class DailyExpensesService(IGenericOperationsRepository GenericOperations
 
         if (entryForFakeDelete == null)
             return ResultPattern<string>.Failure($"No expense of id: {id} was found");
+
+        if (entryForFakeDelete.UserId != currentUser.UserId)
+            return ResultPattern<string>.Failure($"User not allow to change this entry");
 
         entryForFakeDelete.IsDeleted = true;
 

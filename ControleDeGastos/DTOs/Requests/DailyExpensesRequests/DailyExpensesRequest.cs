@@ -1,4 +1,5 @@
 ﻿using ExpensesControl.Data.PaginatedResult.PaginatedRequestDTO;
+using System.ComponentModel.DataAnnotations;
 
 namespace ExpensesControl.DTOs.Requests.DailyExpensesRequests
 {

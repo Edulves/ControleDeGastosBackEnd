@@ -47,9 +47,9 @@ namespace ExpensesControl.Controllers
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
         [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
         [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
-        public async Task<IActionResult> Delete([FromRoute] int id)
+        public async Task<IActionResult> Delete([FromQuery] int request)
         {
-            return (await _expensesControlService.DeleteDailyExpenseEntryByIdAsync(id)).ToIActionResult(this);
+            return (await _expensesControlService.DeleteDailyExpenseEntryByIdAsync(request)).ToIActionResult(this);
         }
     }
 }

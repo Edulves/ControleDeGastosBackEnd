@@ -4,6 +4,13 @@ namespace ExpensesControl.Queries;
 
 public static class DailyExpensesQueries
 {
+    public static IQueryable<DailyExpense> FilterByUserId(this IQueryable<DailyExpense> query, string id)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+            return query;
+
+        return query.Where(x => x.UserId == id);
+    }
     public static IQueryable<DailyExpense> FilterRemoveDeleted(this IQueryable<DailyExpense> query)
     { 
         return query.Where(x => x.IsDeleted != true);
