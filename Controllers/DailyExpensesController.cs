@@ -1,0 +1,55 @@
+using ExpensesControl.Data.PaginatedResult;
+using ExpensesControl.Data.ResultPattern.Extensions;
+using ExpensesControl.DTOs.Requests.DailyExpensesRequests;
+using ExpensesControl.DTOs.Responses.DailyExpensesReponses;
+using ExpensesControl.Service.ServiceInterfaces;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+
+namespace ExpensesControl.Controllers
+{
+    [Route("[controller]")]
+    [ApiController]
+    [Authorize]
+    public class DailyExpensesController(IDailyExpensesService expensesControlService) : ControllerBase
+    {
+        private readonly IDailyExpensesService _expensesControlService = expensesControlService;
+
+        [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(PagedResult<DailyExpenseResponse>))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> Get([FromQuery] DailyExpensesRequest request)
+        {
+            return (await _expensesControlService.GetDailyExpensesAsync(request)).ToIActionResult(this);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> Post([FromBody] List<DailyExpenseEntryRequest> request)
+        {
+            return (await _expensesControlService.CreateDailyExpensesEntriesAsync(request)).ToIActionResult(this);
+        }
+
+        [HttpPut]
+
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> Put([FromBody] List<PutDailyExpensesRequest> request)
+        {
+            return (await _expensesControlService.UpdateDailyExpensesEntriesAsync(request)).ToIActionResult(this);
+        }
+
+        [HttpDelete("{id:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(string))]
+        [ProducesResponseType(StatusCodes.Status400BadRequest, Type = typeof(ProblemDetails))]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError, Type = typeof(ProblemDetails))]
+        public async Task<IActionResult> Delete([FromQuery] int request)
+        {
+            return (await _expensesControlService.DeleteDailyExpenseEntryByIdAsync(request)).ToIActionResult(this);
+        }
+    }
+}

@@ -1,0 +1,20 @@
+services:
+    expenses-control:
+        build: .
+        container_name: expenses-controlAPI
+        ports:
+            - "5000:8080"
+        environment:
+            ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=${POSTGRES_DATABASE};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+
+            Jwt__Key: "${JWT_KEY}"
+            Jwt__Issuer: "${JWT_ISSUER}"
+            Jwt__Audience: "${JWT_AUDIENCE}"
+            Jwt__ExpiresInMinutes: "${JWT_EXPIRES_IN_MINUTES}"
+
+        networks:
+            - backend
+
+networks:
+    backend:
+        external: true
