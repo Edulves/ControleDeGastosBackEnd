@@ -134,14 +134,13 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+
+app.MapOpenApi();
+app.MapScalarApiReference(options =>
 {
-    app.MapOpenApi();
-    app.MapScalarApiReference(options =>
-    {
-        options.WithPersistentAuthentication();
-    });
-}
+    options.WithPersistentAuthentication();
+});
+
 
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
