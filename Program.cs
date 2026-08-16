@@ -122,16 +122,17 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowLocalhost",
-        policy =>
-        {
-            policy
-                .WithOrigins("http://localhost:5173")
-                .AllowAnyHeader()
-                .AllowAnyMethod();
-        });
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy
+            .WithOrigins(
+                "http://localhost:5173",
+                "https://expensescontrol.foxheart.com.br"
+            )
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
-
 var app = builder.Build();
 
 
@@ -145,7 +146,8 @@ app.MapScalarApiReference(options =>
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
-app.UseCors("AllowLocalhost");
+app.UseCors("AllowFrontend");
+
 app.UseAuthentication();
 app.UseAuthorization();
 
