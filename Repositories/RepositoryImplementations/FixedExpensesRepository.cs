@@ -20,7 +20,7 @@ public class FixedExpensesRepository(AppDbContext context, ICurrentUserService _
         .FilterByMonthAndYear(request.Year, request.Month)
         .FilterByPeriod(request.BeginningOfPeriod, request.EndOfPeriod)
         .Include(x => x.User)
-        .OrderBy(x => x.CreatedAt)
+        .OrderBy(x => x.FixedExpenseDate)
         .ThenBy(x => x.FixedExpenseId);
     }
     public async Task<List<FixedExpense>> GetFixedExpensesList(GetFixedExpensesRequest request)
