@@ -8,6 +8,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Scalar.AspNetCore;
 using System.Text;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -87,6 +89,18 @@ builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor |
+        ForwardedHeaders.XForwardedProto;
+
+    options.KnownProxies.Add(
+        IPAddress.Parse("172.21.0.1")
+    );
+});
+
 var jwtKey = builder.Configuration["Jwt:Key"] ?? throw new Exception("Jwt Key não configurada");
 var keyBytes = Encoding.UTF8.GetBytes(jwtKey);
 
@@ -133,18 +147,22 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+
+
+
 var app = builder.Build();
 
+app.UseForwardedHeaders();
+
+app.UseExceptionHandler();
+app.UseHttpsRedirection();
 
 app.MapOpenApi();
+
 app.MapScalarApiReference(options =>
 {
     options.WithPersistentAuthentication();
 });
-
-
-app.UseExceptionHandler();
-app.UseHttpsRedirection();
 
 app.UseCors("AllowFrontend");
 
